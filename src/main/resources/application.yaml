@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: SpringBootMVCDemo
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:StudentGrades
+    username: Paxton
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    show-sql: true
+
+  thymeleaf:
+    cache: false # Disable Thymeleaf caching so HTML changes are instant
+  devtools:
+    livereload:
+      enabled: true
+    # Fully restarts the server only when a Java class changes, not for HTML/CSS
+    restart:
+      additional-paths: src/main/resources/static,src/main/resources/templates

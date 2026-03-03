@@ -1,0 +1,86 @@
+/* Stiudents Lists */
+.table-container {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+}
+.search-bar {
+    border-radius: 50px;
+    padding-left: 1.5rem;
+    border: 1px solid #dee2e6;
+}
+.student-row {
+    transition: all 0.2s;
+}
+.student-row:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+.badge-grade {
+    width: 80px;
+    text-align: center;
+}
+.btn-action {
+    border-radius: 8px;
+    margin: 0 2px;
+}
+
+/*Student Form */
+.popup-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Dark semi-transparent */
+    backdrop-filter: blur(3px); /* Optional: blurs the background */
+    z-index: 1000;
+
+    display: none; /*Hidden By Default*/
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-container {
+    position: relative;
+    height: 300px;
+    width: 318px;
+    background-color: #fff;
+    border: #6c757d solid 1px;
+    border-radius: 6px;
+    padding: 4px 18px 42px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.popup-content {
+    position: relative;
+    top: -50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.popup-image-container {
+    position: relative;
+    top: -70px;
+}
+.popup-image {
+    height: 148px;
+    width: 148px;
+}
+.popup-close-button {
+    color: #fff;
+    background-color: #14b414;
+    width: 100%;
+    height: 40px;
+    border: 0;
+    border-radius: 4px;
+    margin: 48px 0 -48px 0;
+}
+.popup-close-button:hover {
+    background-color: green;
+}
+

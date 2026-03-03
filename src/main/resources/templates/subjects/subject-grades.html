@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Subject Grades | Grading System</title>
+    <th:block th:replace="~{common/layout :: header-css}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/grades.css}">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/students">Students</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/students/view/{id}(id=${student.id})}" th:text="${student.firstName + ' ' + student.lastName}">Student</a></li>
+            <li class="breadcrumb-item active" th:text="${subject.name}">Mathematics</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center">
+                    <h6 class="text-muted text-uppercase small">Subject Standing</h6>
+                    <div class="grade-pill my-2" th:if="${not #lists.isEmpty(results)}"
+                         th:text="${results[0].score + '%'}">0%</div>
+                    <div class="grade-pill my-2" th:unless="${not #lists.isEmpty(results)}">N/A</div>
+                    <p class="fw-bold" th:text="${subject.name}">Subject Name</p>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="small">SBA Weight:</span>
+                        <span class="small fw-bold" th:text="${(subject.sbaWeight * 100) + '%'}">25%</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small">Exam Weight:</span>
+                        <span class="small fw-bold" th:text="${(subject.examWeight * 100) + '%'}">75%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Assessment Breakdown</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                        <tr>
+                            <th>Assessment Type</th>
+                            <th>Score</th>
+                            <th>Weighted Contribution</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="result : ${results}">
+                            <td>
+                                <div class="fw-bold" th:text="${result.assessment.title}">Term Test 1</div>
+                                <div class="weight-tag" th:text="${result.assessment.type}">SBA</div>
+                            </td>
+                            <td>
+                                <div class="progress mb-1" style="width: 100px;">
+                                    <div class="progress-bar" role="progressbar"
+                                         th:style="'width: ' + ${result.score} + '%'"
+                                         th:classappend="${result.score < 50 ? 'bg-danger' : 'bg-success'}"></div>
+                                </div>
+                                <span class="small fw-bold" th:text="${result.score + ' / ' + result.assessment.maxPoints}">85/100</span>
+                            </td>
+                            <td>
+                                    <span class="badge bg-secondary rounded-pill"
+                                          th:text="${#numbers.formatDecimal(result.score * subject.sbaWeight, 1, 1) + '%'}">12%</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(results)}">
+                            <td colspan="3" class="text-center py-5 text-muted">No assessments recorded for this subject yet.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

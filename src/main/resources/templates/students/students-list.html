@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::body}, ~{::link})}">
+<head>
+  <title>Student List | Grading System</title>
+  <link rel="stylesheet" th:href="@{/css/students.css}">
+  <th:block th:replace="~{common/layout :: header-css}"></th:block>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">Students Roster</h2>
+      <p class="text-muted" th:text="${students.size() + ' students currently enrolled'}">0 students</p>
+    </div>
+    <a href="/students/create" class="btn btn-primary px-4 rounded-pill fw-bold">+ Add Student</a>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <input type="text" id="studentSearch" class="form-control search-bar shadow-sm"
+             placeholder="Search by name or surname..." onkeyup="filterStudents()">
+    </div>
+  </div>
+
+  <div class="table-container shadow-sm">
+    <div class="table-responsive">
+      <table class="table align-middle border-0">
+        <thead class="text-muted small text-uppercase">
+        <tr>
+          <th class="border-0 px-3">Student Name</th>
+          <th class="border-0">Grade</th>
+          <th class="border-0">Gender</th>
+          <th class="border-0">Birthday</th>
+          <th class="border-0 text-end px-3">Actions</th>
+        </tr>
+        </thead>
+        <tbody id="studentTableBody">
+        <tr th:each="student : ${students}" class="student-row">
+          <td class="px-3">
+            <div class="fw-bold text-dark" th:text="${student.firstName + ' ' + student.lastName}">Name</div>
+            <div class="small text-muted" th:text="${student.gender == 'MALE' ? 'Male' : 'Female'}">Gender</div>
+          </td>
+          <td>
+                            <span class="badge bg-primary-subtle text-primary badge-grade rounded-pill px-3"
+                                  th:text="'Grade ' + ${student.grade}">Grade 10</span>
+          </td>
+          <td th:text="${student.gender}">Gender</td>
+          <td class="text-muted" th:text="${student.birthDay}">2008-01-01</td>
+          <td class="text-end px-3">
+            <a th:href="@{/students/student/{id}(id=${student.id})}" class="btn btn-outline-info btn-sm btn-action">View</a>
+            <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-outline-warning btn-sm btn-action">Edit</a>
+            <button class="btn btn-outline-danger btn-sm btn-action" onclick="'deleteStudent(\'' + ${student.id} + '\')'">Delete</button>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(students)}">
+          <td colspan="5" class="text-center py-5 text-muted">
+            No students found. Start by adding one!
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Quick frontend search filter
+  function filterStudents() {
+    let input = document.getElementById('studentSearch').value.toLowerCase();
+    let rows = document.querySelectorAll('.student-row');
+
+    rows.forEach(row => {
+      let name = row.cells[0].innerText.toLowerCase();
+      row.style.display = name.includes(input) ? '' : 'none';
+    });
+  }
+
+  function deleteStudent(id) {
+    if(confirm('Are you sure you want to remove this student?')) {
+      // Your fetch delete logic here
+    }
+  }
+</script>
+</body>
+</html>

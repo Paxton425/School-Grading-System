@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::main}, null)}">
+<head>
+    <title>Error | Grading System</title>
+</head>
+<body class="bg-light">
+
+<main class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="display-1 text-danger fw-bold" th:text="${errorCode}">500</div>
+            <h2 class="mb-4">Something went wrong</h2>
+            <p class="lead text-muted" th:text="${errorMessage}">An unexpected error occurred.</p>
+            <hr>
+            <a href="/" class="btn btn-primary">Return to Dashboard</a>
+            <button onclick="history.back()" class="btn btn-outline-secondary">Go Back</button>
+        </div>
+    </div>
+</main>
+</body>
+</html>

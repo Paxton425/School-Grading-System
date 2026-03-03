@@ -1,0 +1,85 @@
+.layout {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0.28rem 0 0.8rem rgba(0, 0, 0, 0.148);
+}
+.sidebar-head {
+    height: 68px;
+}
+.navbar-brand {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.brand {
+    font-size: 20px;
+    font-weight: 580;
+}
+.logo-image {
+    width: 60px;
+    height: 50px;
+}
+.sidebar-content {
+    padding: 0;
+}
+.sidebar-nav{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+.sidebar-nav-section {
+    padding: 0 0 0 12px;
+}
+.sidebar-nav{
+}
+.sidebar-nav > .nav-item {
+    height: 46px;
+    padding-left: 12px;
+    display: flex;
+    align-items: center;
+}
+.sidebar-nav > .nav-item:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.navbar {
+    height: 68px;
+    width: 100%;
+    padding: 0 12px 0 12px;
+}
+.navbar-container {
+    height: inherit;
+    width: 100%;
+    border-bottom: #14b414 solid 1px;
+}
+
+.main-section {
+    height: 100vh;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+.main-content {
+    padding: 16px;
+    flex-grow: 1;        /* Added: Take up all remaining height */
+    overflow-y: auto;    /* Changed: 'auto' is cleaner than 'scroll' */
+    min-height: 0;
+}
+
+
+/* Add to your stylesheet */
+.table-blue-400 {
+    background-color: #09b2e6 !important; /* or whatever shade you want */
+    color: white;
+}

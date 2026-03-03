@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::body})}">
+<head>
+    <meta charset="UTF-8" />
+    <title>Create Student Profile</title>
+    <link rel="stylesheet" th:href="@{/css/students.css}" href="../../static/css/students.css">
+</head>
+<body class="bg-light">
+
+<div class="main-content container mt-5">
+    <div class="row">
+        <form class="row" th:action="@{/students/save}" th:object="${student}" method="post">
+            <div class="col-md-7">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Personal Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <input type="hidden" th:field="*{id}" />
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">First Name</label>
+                                <input
+                                        type="text"
+                                        th:field="*{firstName}"
+                                        class="form-control"
+                                        placeholder="e.g. Thabo"
+                                        required/>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Last Name</label>
+                                <input type="text"
+                                        th:field="*{lastName}"
+                                        class="form-control"
+                                        placeholder="e.g. Mokoena"
+                                        required/>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Grade</label>
+                            <select th:field="*{grade}" class="form-select">
+                                <option value="" th:text="|Choose a grade|"></option>
+                                <option th:each="n : ${#numbers.sequence(0, 12)}"
+                                        th:value="${n}"
+                                        th:text="|Grade ${n}|">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <select th:field="*{gender}" class="form-select">
+                                <option
+                                        th:each="g : ${genders}"
+                                        th:value="${g}"
+                                        th:text="${g}"
+                                ></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Date of Birth</label>
+                            <input
+                                    type="date"
+                                    th:field="*{birthDay}"
+                                    class="form-control"
+                                    required/>
+                            <small class="text-muted">
+                                Required for CAPS ID validation
+                            </small>
+                        </div>
+
+                        <div class="d-grid">
+                            <button
+                                    class="btn btn-primary"
+                                    type="submit"
+                                    onclick="saveStudent(event)">
+                                Save Student Profile
+                            </button>
+                        </div>
+                        <div class="popup-backdrop" id="popupBackdrop" onclick="closePopup()">
+                            <div id="popup" class="popup-container" >
+                                <div class="popup-image-container">
+                                    <img class="popup-image"
+                                         th:src="@{/images/check-mark-filled.png}"
+                                         src="../../static/images/check-mark-icon.png"
+                                         alt="check mark icon">
+                                </div>
+                                <div class="popup-content">
+                                    <h2 class="mb-2">Success</h2>
+                                    <p class="mb-2" id="popupMessage" style="text-align: center;">
+                                        Student data has been saved
+                                    </p>
+                                    <button type="button" class="popup-close-button">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card shadow-sm border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Enrolled Subjects</h5>
+                    </div>
+                    <div class="card-body" id="enrollmentSection">
+                        <div class="table-responsive">
+                            <table
+                                    class="table table-sm table-hover align-middle"
+                                    id="draftSubjectTable">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Grade</th>
+                                    <th>Department</th>
+                                    <th class="text-end"></th>
+                                </tr>
+                                </thead>
+                                <tbody id="draftSubjectBody">
+                                <tr
+                                        id="emptyRow"
+                                        th:if="${#lists.isEmpty(student.enrollments)}">
+                                    <td
+                                            colspan="4"
+                                            class="text-center py-3 text-muted">
+                                        No subjects added to draft.
+                                    </td>
+                                </tr>
+
+                                <tr th:each="enrollment : ${student.enrollments}">
+                                    <td style="display: none;" th:text="${enrollment.subject.getId()}"></td>
+                                    <td th:text="${enrollment.subject.name}">
+                                        Mathematics
+                                    </td>
+                                    <td th:text="${enrollment.subject.grade}">
+                                        FET
+                                    </td>
+                                    <td
+                                            th:text="${enrollment.subject.department}">
+                                        MATHEMATICS
+                                    </td>
+                                    <td class="text-end">
+                                        <button
+                                                type="button"
+                                                class="btn btn-link text-danger p-0"
+                                                onclick="removeRow(this)">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-grid mt-3">
+                            <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addSubjectModal">
+                                + Add Subject to Draft
+                            </button>
+                        </div>
+                        <div
+                                class="modal fade"
+                                id="addSubjectModal"
+                                tabindex="-1"
+                                aria-labelledby="addSubjectModalLabel"
+                                aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5
+                                                class="modal-title"
+                                                id="addSubjectModalLabel">
+                                            Enroll in Subject
+                                        </h5>
+                                        <button
+                                                type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close">
+
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">
+                                                Select Subject
+                                            </label>
+                                            <select
+                                                    class="form-select"
+                                                    id="subjectSelection">
+                                                <option value="" selected disabled>
+                                                    Choose a subject...
+                                                </option>
+                                                <option
+                                                        th:each="subject : ${allSubjects}"
+                                                        th:value="${subject.getName()}"
+                                                        th:data-id="${subject.getId()}"
+                                                        th:data-name="${subject.getName()}"
+                                                        th:data-grade="${subject.getGrade()}"
+                                                        th:data-dept="${subject.department}"
+                                                        th:text="|${subject.getName()}|">
+                                                    Subject Name
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-text">
+                                            Note: This adds the subject to your
+                                            <strong>unsubmitted draft</strong>
+                                            list on the right.
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button
+                                                type="button"
+                                                class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button
+                                                type="button"
+                                                class="btn btn-success"
+                                                onclick="addSubjectToTable(event)">
+                                            Add to Draft
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+
+<th:block th:replace="~{common/layout :: header-scripts}"></th:block>
+<script th:inline="javascript">
+    const popupBackdrop = document.getElementById('popupBackdrop');
+    const popup = document.getElementById('popup');
+    const popupMessage = document.getElementById('popupMessage');
+    const enrollmentRows = document.getElementById('draftSubjectBody').querySelectorAll('tr');
+    let enrollmentIndex = /*[[${student.enrollments != null ? #lists.size(student.enrollments) : 0}]]*/ 0;
+    // 2. IMPORTANT: Pre-fill the array with existing enrollments so the POST payload is complete
+    let enrolledSubjects = Array.isArray(enrollmentRows)?
+        enrollmentRows.map((element) => (
+            {
+                Id :  element.querySelectorAll('td')[0].textContent,
+                name: element.querySelectorAll('td')[1].textContent,
+                grade: element.querySelectorAll('td')[2].textContent,
+                department: element.querySelectorAll('td')[3].textContent,
+            }
+        )) : [];
+
+    function openPopup(message){
+        popupBackdrop.style.display = "flex";
+        popupMessage.textContent = message;
+    }
+    function  closePopup(){
+        popupBackdrop.style.display = "none";
+    }
+
+    function addSubjectToTable(e) {
+        e.preventDefault()
+        const select = document.querySelector('#subjectSelection');
+        const subjectId = select.value;
+
+        // Get data attributes from the selected option (you'll need to add these to your th:each)
+        const subject = {
+            Id :  select.options[select.selectedIndex].getAttribute('data-id'),
+            name: select.options[select.selectedIndex].getAttribute('data-name'),
+            department: select.options[select.selectedIndex].getAttribute('data-dept'),
+            grade: select.options[select.selectedIndex].getAttribute('data-grade')
+        }
+
+        if(!subjectId) return;
+
+        // Remove "Empty" row if it exists
+        const emptyRow = document.getElementById('emptyRow');
+        if(emptyRow) emptyRow.remove();
+
+        const tbody = document.getElementById('draftSubjectBody');
+        const row = `
+          <tr>
+              <td style="display: none;">${subject.Id}</td>
+              <td>
+                  ${subject.name}
+                  <input type="hidden" th:field="*{enrollments}" name="enrollments[${enrollmentIndex}].subject.id" value="${subjectId}">
+              </td>
+              <td>${subject.grade}</td>
+              <td>${subject.department}</td>
+              <td class="text-end">
+                  <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()">Remove</button>
+              </td>
+          </tr>
+      `;
+
+        tbody.insertAdjacentHTML('beforeend', row);
+        enrolledSubjects.push(subject);
+        enrollmentIndex++;
+
+        // Close Modal
+        bootstrap.Modal.getInstance(document.getElementById('addSubjectModal')).hide();
+    }
+
+    async function saveStudent(e){
+        e.preventDefault();
+
+        const studentId = document.getElementById('id').value;
+        const studentData = {
+            id: studentId ? studentId : null, // Include the ID for updates!
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            grade: document.getElementById('grade').value,
+            gender: document.getElementById('gender').value,
+            birthDay: document.getElementById('birthDay').value,
+            enrollmentSubjects: Array.isArray(enrolledSubjects) ? enrolledSubjects : []
+        };
+        const dynamicOptions = studentData.id?
+            {
+                method: 'PUT',
+                url: `/students/edit/save/${studentData.id}`,
+            }: {
+                method: 'POST',
+                url: `/students/create/save`,
+            }
+
+        console.log('options', dynamicOptions);
+
+        console.log('body: ', studentData)
+
+        const response = await fetch(dynamicOptions.url, {
+            method: dynamicOptions.method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(studentData)
+        });
+
+        const message = await response.text();
+
+        console.log('response code', response.status, 'message', message);
+
+        if (response.ok) {
+            openPopup(message);
+            //window.location.href = "/students";
+        } else {
+            alert("The kick missed! Check the console for errors.");
+            console.log('sent object', studentData)
+        }
+    }
+</script>
+</html>

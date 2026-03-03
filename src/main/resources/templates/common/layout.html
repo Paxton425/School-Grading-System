@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content, contentStyle)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} ?: 'Grading Portal'">Grading Portal</title>
+
+    <th:block th:fragment="layout-css">
+        <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" media="screen">
+        <link rel="stylesheet" th:href="@{/css/style.css}" href="../../static/css/style.css">
+    </th:block>
+    <th:block th:if="${contentStyle != null}">
+        <th:block th:replace="${contentStyle} ?: _"></th:block>
+    </th:block>                                                                        
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-container">
+            <div class="sidebar-head">
+                <div class="navbar-brand">
+                    <img class="logo-image" th:src="@{/images/bar-graph.png}" alt="bar-graph logo"/>
+                    <h3 class="brand pt-2"> Grades Tracking </h3>
+                </div>
+            </div>
+            <div class="sidebar-content">
+                <section class="sidebar-nav-section mb-1">
+                    <p class="fw-bold">Students</p>
+                    <ul class="sidebar-nav">
+                        <li class="nav-item"><a class="nav-link" th:href="@{/students}">Students</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/students/create}">Add Student</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/templates/subjects}">Grades</a></li>
+                    </ul>
+                </section>
+                <section class="sidebar-nav-section">
+                    <p class="fw-bold">Instructors</p>
+                    <ul class="sidebar-nav">
+                        <li class="nav-item"><a class="nav-link" th:href="@{/teachers}">Teachers</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/teachers/create}">Add Teacher</a></li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+    <div class="main-section">
+        <div class="navbar">
+            <nav class="navbar-container navbar-expand-lg bg-white text-primary">
+                <div class="container-fluid">
+                </div>
+            </nav>
+        </div>
+        <main class="main-content">
+            <th:block th:insert="${content}"></th:block>
+        </main>
+    </div>
+</div>
+<th:block th:fragment="header-scripts">
+    <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
+</th:block>
+</body>
+</html>
