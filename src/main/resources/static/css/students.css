@@ -56,7 +56,7 @@
 }
 .popup-content {
     position: relative;
-    top: -50px;
+    top: -44px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -65,7 +65,7 @@
 }
 .popup-image-container {
     position: relative;
-    top: -70px;
+    top: -64px;
 }
 .popup-image {
     height: 148px;
@@ -73,14 +73,130 @@
 }
 .popup-close-button {
     color: #fff;
-    background-color: #14b414;
     width: 100%;
     height: 40px;
     border: 0;
     border-radius: 4px;
     margin: 48px 0 -48px 0;
 }
-.popup-close-button:hover {
+.success-button {
+    background-color: #14b414;
+}
+.error-button {
+    background-color: #e10e00;
+}
+.success-button:hover {
     background-color: green;
 }
+.error-button:hover {
+    background-color: #980900;
+}
 
+
+/* Table Header Contrast */
+thead th {
+    background-color: #f8f9fa !important;
+    color: #495057;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 1.2rem 1rem !important;
+    border-bottom: 2px solid #dee2e6 !important;
+}
+
+/* Row Styling */
+tbody tr {
+    transition: all 0.2s;
+}
+
+tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.02) !important;
+    transform: scale(1.002);
+}
+
+/* Avatar Circle */
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    background-color: #6c757d;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* Action Button */
+.btn-action {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-action:hover {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd;
+}
+
+.btn-action:hover i {
+    color: white !important;
+}
+
+/* Average Column Visual */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
+
+/* Report */
+.report-header {
+    background: linear-gradient(to right, #ffffff, #f8f9fa);
+    border-left: 6px solid #0d6efd; /* Light Blue range */
+}
+
+.report-avatar {
+    width: 80px;
+    height: 80px;
+    background-color: #e9ecef;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #adb5bd;
+}
+
+/* Status Badges with light backgrounds */
+.bg-success-light {
+    background-color: rgba(20, 180, 20, 0.1);
+    border: 1px solid rgba(20, 180, 20, 0.2);
+}
+
+.bg-danger-light {
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+/* Table Polish */
+.table thead th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    letter-spacing: 1px;
+}
+
+@media print {
+    .sidebar, .navbar, .btn { display: none !important; }
+    .main-section { margin: 0; padding: 0; width: 100%; }
+    .card { box-shadow: none !important; border: 1px solid #eee !important; }
+}

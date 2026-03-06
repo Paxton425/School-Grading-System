@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(~{::content}, ~{::link}, ~{::scripts})}">
+    <head>
+        <Title>Students Achievents Summaries</Title>
+        <link rel="stylesheet" th:href="@{/css/students.css}">
+    </head>
+<body>
+
+<div th:fragment="content" class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark">Student Achievement Overview</h3>
+            <p class="text-muted">Performance metrics across all subjects</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Grade Level</th>
+                    <th>Average Score</th>
+                    <th>Highest achieved</th>
+                    <th>Lowest achieved</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="dto : ${studentsSummaries}">
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm me-3 text-white">
+                                <span th:text="${#strings.substring(dto.firstName+dto.lastName,0,1)}"></span>
+                            </div>
+                            <span class="fw-semibold text-dark" th:text="${dto.firstName} + ${dto.lastName}">John Doe</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border" th:text="'Grade ' + ${dto.getGrade()}">Grade 10</span>
+                    </td>
+                    <td>
+                        <div class="progress" style="height: 8px; width: 100px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 th:style="'width: ' + ${dto.average} + '%'"></div>
+                        </div>
+                        <small class="fw-bold mt-1 d-block" th:text="${#numbers.formatDecimal(dto.average, 1, 1)} + '%'"></small>
+                    </td>
+                    <td class="text-success fw-bold">
+                        <i class="bi bi-caret-up-fill me-1"></i>[[${dto.max}]]%
+                    </td>
+                    <td class="text-danger fw-bold">
+                        <i class="bi bi-caret-down-fill me-1"></i>[[${dto.min}]]%
+                    </td>
+                    <td class="text-center">
+                        <a th:href="@{/students/student/{id}/report(id=${dto.id})}"
+                           class="btn btn-light btn-sm btn-action"
+                           title="View Detailed Achievements">
+                            <i class="bi bi-person-vcard text-primary"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

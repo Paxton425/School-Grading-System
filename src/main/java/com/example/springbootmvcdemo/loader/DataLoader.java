@@ -84,7 +84,6 @@ public class DataLoader implements CommandLineRunner {
         Assessment term2Project = new Assessment();
         term2Project.setTitle("Term 1 Programming Project");
         term2Project.setType(Assessment.AssessmentType.SBA); // Projects fall under SBA
-        term2Project.setTerm(Assessment.Term.TERM_1);
         term2Project.setMaxPoints(50);
         term2Project.setSubject(subject);
         assessmentRepo.save(term2Project);
@@ -93,7 +92,6 @@ public class DataLoader implements CommandLineRunner {
         Assessment itPat = new Assessment();
         itPat.setTitle("Coding Practicals 1");
         itPat.setType(Assessment.AssessmentType.PAT);
-        itPat.setTerm(Assessment.Term.TERM_1);
         itPat.setMaxPoints(100);
         itPat.setSubject(subject);
         assessmentRepo.save(itPat);
@@ -102,11 +100,13 @@ public class DataLoader implements CommandLineRunner {
         Result projectGrade = new Result();
         projectGrade.setEnrollment(enrollment);
         projectGrade.setAssessment(term2Project);
+        projectGrade.setTerm(Result.Term.TERM_2);
         projectGrade.setScore(42.0); // 42/50
         achievementRepo.save(projectGrade);
 
         Result patGrade = new Result();
         patGrade.setEnrollment(enrollment);
+        patGrade.setTerm(Result.Term.TERM_1);
         patGrade.setAssessment(itPat);
         patGrade.setScore(85.0); // 85/100
         achievementRepo.save(patGrade);

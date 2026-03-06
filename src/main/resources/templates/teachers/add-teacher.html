@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(~{::content}, ~{::link}, ~{::scripts})}">
+<head>
+    <title>Add New Teacher | Grades Manager</title>
+    <link rel="stylesheet" th:href="@{/css/teachers.css}" href="../../static/css/teachers.css">
+</head>
+<body>
+
+<div th:fragment="content" class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card form-card border-0">
+                <div class="card-header bg-white pt-4 pb-0 border-0">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box me-3">
+                            <i class="bi bi-person-badge-fill text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0 fw-bold">Add Teacher</h4>
+                            <p class="text-muted small">Register a new instructor into the system</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form th:action="@{/teachers}" th:object="${teacher}" method="post" class="needs-validation">
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" th:field="*{firstName}" class="form-control" placeholder="e.g. John" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" th:field="*{lastName}" class="form-control" placeholder="e.g. Doe" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">Employee ID</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                    <input type="text" th:field="*{employeeId}" class="form-control" placeholder="EMP-001" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Department</label>
+                                <select th:field="*{department}" class="form-select border-start-0 ps-0">
+                                    <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Role</label>
+                                <select th:field="*{role}" class="form-select border-start-0 ps-0">
+                                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" th:field="*{email}" class="form-control" placeholder="john.doe@school.com" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                    <input type="tel" th:field="*{phone}" class="form-control" placeholder="+27 123 4567">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label d-block">Gender</label>
+                            <div class="d-flex gap-4 mt-2">
+                                <div th:each="g : ${genders}" class="form-check custom-radio">
+                                    <input class="form-check-input" type="radio" th:field="*{gender}" th:value="${g}" th:id="${'gender-' + g}">
+                                    <label class="form-check-label" th:for="${'gender-' + g}" th:text="${g}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25">
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a th:href="@{/teachers}" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 btn-submit">
+                                <i class="bi bi-check-lg me-2"></i>Save Teacher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:fragment="scripts">
+    <script>
+        $(document).ready(() => {
+            console.log("Teacher creation form ready");
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

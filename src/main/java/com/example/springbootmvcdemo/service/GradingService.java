@@ -1,18 +1,40 @@
 package com.example.springbootmvcdemo.service;
 
 import com.example.springbootmvcdemo.model.Assessment;
+import com.example.springbootmvcdemo.model.Result.Term;
 import com.example.springbootmvcdemo.model.SubjectEnrollment;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GradingService {
-    public double calculateFinalMark(SubjectEnrollment enrollment) {
-        double sba = enrollment.getGrades().stream()
+    public double calculateMaxGrade(SubjectEnrollment en){
+        double max = en.getGrades().stream()
                 .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA)
+                .mapToDouble(g -> g.getScore())
+                .max().orElse(0.0);
+        return max;
+    }
+    public double calculateMinGrade(SubjectEnrollment en){
+        double min = en.getGrades().stream()
+                .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA)
+                .mapToDouble(g -> g.getScore())
+                .min().orElse(0.0);
+        return min;
+    }
+    public double calculateGradeAverage(SubjectEnrollment en, Term term){
+        double average = en.getGrades().stream()
+                .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA && g.getTerm() == term)
+                .mapToDouble(g -> g.getScore())
+                .average().orElse(0.0);
+        return  average;
+    }
+    public double calculateFinalMark(SubjectEnrollment se, Term term) {
+        double sba = se.getGrades().stream()
+                .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA && g.getTerm() == term)
                 .mapToDouble(g -> g.getScore())
                 .average().orElse(0.0);
 
-        double exam = enrollment.getGrades().stream()
+        double exam = se.getGrades().stream()
                 .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.EXAM)
                 .mapToDouble(g -> g.getScore())
                 .findFirst().orElse(0.0);
@@ -20,7 +42,6 @@ public class GradingService {
         // Apply SA FET Phase Weighting: 25% SBA, 75% Exam
         return (sba * 0.25) + (exam * 0.75);
     }
-
     public int calculateLevel(double mark) {
         if (mark >= 80) return 7;
         if (mark >= 70) return 6;

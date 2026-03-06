@@ -7,10 +7,10 @@ import jakarta.persistence.*;
 import java.util.List;
 
 public class SubjectEnrollmentDTO {
-    public SubjectEnrollmentDTO(Long id, StudentDTO student, StudentDTO.SubjectDTO subject, Teacher teacher, List<ResultDTO> grades){}
+    public SubjectEnrollmentDTO(Long id, StudentDTO student, SubjectDTO subject, Teacher teacher, List<ResultDTO> grades){}
     public Long id;
     public StudentDTO student;
-    public StudentDTO.SubjectDTO subject;
+    public SubjectDTO subject;
     public Teacher teacher;
     public List<ResultDTO> grades;
 

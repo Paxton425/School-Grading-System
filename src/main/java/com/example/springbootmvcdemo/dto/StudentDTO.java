@@ -22,11 +22,4 @@ public class StudentDTO {
     public Gender gender;
     public LocalDate birthDay;
     public List<SubjectDTO> enrollmentSubjects;
-
-    public static class SubjectDTO {
-        public Long Id;
-        public String name;
-        public String department;
-        public String phase;
-    }
 }

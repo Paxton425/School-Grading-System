@@ -1,9 +1,11 @@
 package com.example.springbootmvcdemo.controller;
 
+import com.example.springbootmvcdemo.model.Department;
 import com.example.springbootmvcdemo.model.Teacher;
 import com.example.springbootmvcdemo.repository.TeacherRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -24,4 +26,16 @@ public class TeacherController {
         model.addAttribute("teachers", teachers);
         return "teachers/teachers-list";
     }
+
+    @GetMapping("/create")
+    public String crateTeacher(Model model) {
+        // Pass a blank object for Thymeleaf binding
+        model.addAttribute("teacher", new Teacher());
+        model.addAttribute("roles", Teacher.Role.values());
+        model.addAttribute("genders", Teacher.Gender.values());
+        model.addAttribute("departments", Department.values());
+
+        return "teachers/add-teacher";
+    }
+
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::body})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(~{::body}, ~{::link}, ~{::script})}">
 <head>
     <meta charset="UTF-8" />
     <title>Create Student Profile</title>
@@ -74,7 +75,7 @@
 
                         <div class="d-grid">
                             <button
-                                    class="btn btn-primary"
+                                    class="save-student-button btn btn-primary"
                                     type="submit"
                                     onclick="saveStudent(event)">
                                 Save Student Profile
@@ -89,11 +90,11 @@
                                          alt="check mark icon">
                                 </div>
                                 <div class="popup-content">
-                                    <h2 class="mb-2">Success</h2>
+                                    <h2 class="popup-status mb-2">Success</h2>
                                     <p class="mb-2" id="popupMessage" style="text-align: center;">
                                         Student data has been saved
                                     </p>
-                                    <button type="button" class="popup-close-button">
+                                    <button type="button" class="popup-close-button success-button">
                                         Close
                                     </button>
                                 </div>
@@ -110,8 +111,7 @@
                     </div>
                     <div class="card-body" id="enrollmentSection">
                         <div class="table-responsive">
-                            <table
-                                    class="table table-sm table-hover align-middle"
+                            <table class="table table-sm table-hover align-middle"
                                     id="draftSubjectTable">
                                 <thead class="table-light">
                                 <tr>
@@ -122,8 +122,7 @@
                                 </tr>
                                 </thead>
                                 <tbody id="draftSubjectBody">
-                                <tr
-                                        id="emptyRow"
+                                <tr id="emptyRow"
                                         th:if="${#lists.isEmpty(student.enrollments)}">
                                     <td
                                             colspan="4"
@@ -140,8 +139,7 @@
                                     <td th:text="${enrollment.subject.grade}">
                                         FET
                                     </td>
-                                    <td
-                                            th:text="${enrollment.subject.department}">
+                                    <td th:text="${enrollment.subject.department}">
                                         MATHEMATICS
                                     </td>
                                     <td class="text-end">
@@ -158,16 +156,14 @@
                         </div>
 
                         <div class="d-grid mt-3">
-                            <button
-                                    type="button"
+                            <button type="button"
                                     class="btn btn-outline-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#addSubjectModal">
                                 + Add Subject to Draft
                             </button>
                         </div>
-                        <div
-                                class="modal fade"
+                        <div class="modal fade"
                                 id="addSubjectModal"
                                 tabindex="-1"
                                 aria-labelledby="addSubjectModalLabel"
@@ -175,9 +171,7 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5
-                                                class="modal-title"
-                                                id="addSubjectModalLabel">
+                                        <h5 class="modal-title" id="addSubjectModalLabel">
                                             Enroll in Subject
                                         </h5>
                                         <button
@@ -190,9 +184,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label class="form-label">
-                                                Select Subject
-                                            </label>
+                                            <label class="form-label">Select Subject </label>
                                             <select
                                                     class="form-select"
                                                     id="subjectSelection">
@@ -241,14 +233,14 @@
     </div>
 </div>
 </body>
-
-<th:block th:replace="~{common/layout :: header-scripts}"></th:block>
 <script th:inline="javascript">
     const popupBackdrop = document.getElementById('popupBackdrop');
     const popup = document.getElementById('popup');
     const popupMessage = document.getElementById('popupMessage');
+    const saveStudentButton = document.querySelector('.save-student-button');
+
     const enrollmentRows = document.getElementById('draftSubjectBody').querySelectorAll('tr');
-    let enrollmentIndex = /*[[${student.enrollments != null ? #lists.size(student.enrollments) : 0}]]*/ 0;
+    let enrollmentIndex = Array.isArray(enrollmentRows)? enrollmentRows.length : 0;
     // 2. IMPORTANT: Pre-fill the array with existing enrollments so the POST payload is complete
     let enrolledSubjects = Array.isArray(enrollmentRows)?
         enrollmentRows.map((element) => (
@@ -260,10 +252,30 @@
             }
         )) : [];
 
-    function openPopup(message){
-        popupBackdrop.style.display = "flex";
-        popupMessage.textContent = message;
+    const loadingSpinner = (`
+        <div class="spinner-border spinner-border-sm text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    `);
+
+    function openPopup(status, message) {
+        const $popupStatus = status.charAt(0).toUpperCase() + status.slice(1);
+        const $closeBtn = $('.popup-close-button');
+        const $popupImg = $('.popup-image');
+
+        if (status === 'success') {
+            $closeBtn.removeClass('error-button').addClass('success-button');
+            $popupImg.attr('src', '/images/check-mark-filled.png');
+        } else {
+            $closeBtn.removeClass('success-button').addClass('error-button');
+            $popupImg.attr('src', '/images/red-error-icon.png');
+        }
+
+        $('.popup-status').text($popupStatus);
+        $('#popupBackdrop').css('display', 'flex');
+        $('#popupMessage').text(message);
     }
+
     function  closePopup(){
         popupBackdrop.style.display = "none";
     }
@@ -293,7 +305,7 @@
               <td style="display: none;">${subject.Id}</td>
               <td>
                   ${subject.name}
-                  <input type="hidden" th:field="*{enrollments}" name="enrollments[${enrollmentIndex}].subject.id" value="${subjectId}">
+                  <input type="hidden" th:field="*{enrollments}" name="${subject.id}" value="${subjectId.id}">
               </td>
               <td>${subject.grade}</td>
               <td>${subject.department}</td>
@@ -313,49 +325,80 @@
 
     async function saveStudent(e){
         e.preventDefault();
+        e.target.disabled = true;
+        e.target.innerHTML = loadingSpinner;
 
-        const studentId = document.getElementById('id').value;
-        const studentData = {
-            id: studentId ? studentId : null, // Include the ID for updates!
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            grade: document.getElementById('grade').value,
-            gender: document.getElementById('gender').value,
-            birthDay: document.getElementById('birthDay').value,
-            enrollmentSubjects: Array.isArray(enrolledSubjects) ? enrolledSubjects : []
-        };
-        const dynamicOptions = studentData.id?
-            {
-                method: 'PUT',
-                url: `/students/edit/save/${studentData.id}`,
-            }: {
-                method: 'POST',
-                url: `/students/create/save`,
+        try{
+            const studentId = $('#id').value;
+            const studentData = {
+                id: studentId ? studentId : null, // Include the ID for updates!
+                firstName: $('#firstName').val().trim(),
+                lastName: $('#lastName').val().trim(),
+                grade: $('#grade').val().trim(),
+                gender: $('#gender').val().trim(),
+                birthDay: $('#birthDay').val().trim(),
+                enrollmentSubjects: Array.isArray(enrolledSubjects) ? enrolledSubjects : []
+            };
+
+            if(isDataValid(studentData)){
+                const dynamicOptions = studentData.id?
+                    {
+                        method: 'PUT',
+                        url: `/students/edit/save/${studentData.id}`,
+                    }: {
+                        method: 'POST',
+                        url: `/students/create/save`,
+                    }
+
+                console.log('options', dynamicOptions);
+
+                console.log('body: ', studentData)
+
+                const response = await fetch(dynamicOptions.url, {
+                    method: dynamicOptions.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(studentData)
+                });
+
+                const message = await response.text();
+
+                console.log('response code', response.status, 'message', message);
+
+                if (response.ok) {
+                    openPopup('success', message);
+                    $('.popup-close-button').on('click', ()=>{
+                        closePopup();
+                        window.location.href = "/students";
+                    })
+                } else {
+                    e.target.innerHTML = 'Save Student Profile';
+                    alert("Something went wrong.");
+                    console.log('sent object', studentData)
+                }
             }
-
-        console.log('options', dynamicOptions);
-
-        console.log('body: ', studentData)
-
-        const response = await fetch(dynamicOptions.url, {
-            method: dynamicOptions.method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(studentData)
-        });
-
-        const message = await response.text();
-
-        console.log('response code', response.status, 'message', message);
-
-        if (response.ok) {
-            openPopup(message);
-            //window.location.href = "/students";
-        } else {
-            alert("The kick missed! Check the console for errors.");
-            console.log('sent object', studentData)
         }
+        catch(error){
+            openPopup('error', error.message);
+            e.target.innerHTML = 'Save Student Profile';
+            e.target.disabled = false;
+        }
+    }
+
+    function isDataValid(studentData) {
+        for (let key in studentData) {
+            let value = studentData[key];
+
+            if(key === 'id') continue; //Ignore Id
+            if (key === 'enrollmentSubjects') { // 1. Specific check for the enrollments array
+                if(value.length === 0) throw new Error("Please select at least one subject.");
+            }
+            else if (!value) {
+                throw new Error(`The field ${key} cannot be empty.`);
+            }
+        }
+        return true;
     }
 </script>
 </html>
