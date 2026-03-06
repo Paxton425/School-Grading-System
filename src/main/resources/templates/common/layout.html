@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content, contentStyle)">
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content, style, scripts)">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,10 +7,14 @@
 
     <th:block th:fragment="layout-css">
         <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" media="screen">
-        <link rel="stylesheet" th:href="@{/css/style.css}" href="../../static/css/style.css">
+        <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css}">
+        <link rel="stylesheet" th:href="@{/css/layout.css}" href="../../static/css/layout.css">
     </th:block>
-    <th:block th:if="${contentStyle != null}">
-        <th:block th:replace="${contentStyle} ?: _"></th:block>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <th:block th:if="${style != null}">
+        <th:block th:replace="${style} ?: _"></th:block>
     </th:block>                                                                        
 </head>
 <body>
@@ -20,23 +24,29 @@
             <div class="sidebar-head">
                 <div class="navbar-brand">
                     <img class="logo-image" th:src="@{/images/bar-graph.png}" alt="bar-graph logo"/>
-                    <h3 class="brand pt-2"> Grades Tracking </h3>
+                    <h4 class="brand pt-2"> Grades Manager </h4>
                 </div>
             </div>
             <div class="sidebar-content">
                 <section class="sidebar-nav-section mb-1">
+                    <p class="fw-bold">Dashboard</p>
+                    <ul class="sidebar-nav">
+                        <li class="nav-item"><a class="nav-link" th:href="@{/dashboard}"><i class="bi bi-speedometer mr-2"></i> Dashboard</a></li>
+                    </ul>
+                </section>
+                <section class="sidebar-nav-section mb-1">
                     <p class="fw-bold">Students</p>
                     <ul class="sidebar-nav">
-                        <li class="nav-item"><a class="nav-link" th:href="@{/students}">Students</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/students/create}">Add Student</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/templates/subjects}">Grades</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/students}"><i class="bi bi-mortarboard-fill mr-2"></i> Students</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/students/create}"><i class="bi bi-plus-circle-fill mr-2"></i> Add Student</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/students/grades}"> <i class="bi bi-bar-chart-line mr-2"></i> Grades</a></li>
                     </ul>
                 </section>
                 <section class="sidebar-nav-section">
                     <p class="fw-bold">Instructors</p>
                     <ul class="sidebar-nav">
-                        <li class="nav-item"><a class="nav-link" th:href="@{/teachers}">Teachers</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/teachers/create}">Add Teacher</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/teachers}"><i class="bi bi-briefcase-fill"></i> Teachers</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/teachers/create}"><i class="bi bi-person-plus-fill"></i> Add Teacher</a></li>
                     </ul>
                 </section>
             </div>
@@ -44,8 +54,13 @@
     </div>
     <div class="main-section">
         <div class="navbar">
-            <nav class="navbar-container navbar-expand-lg bg-white text-primary">
-                <div class="container-fluid">
+            <nav class="navbar-container navbar-expand-lg bg-white">
+                <div class="container-fluid d-flex align-items-center">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0" id="breadcrumb-container">
+                            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                        </ol>
+                    </nav>
                 </div>
             </nav>
         </div>
@@ -54,8 +69,37 @@
         </main>
     </div>
 </div>
-<th:block th:fragment="header-scripts">
-    <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/webjars/jquery/4.0.0/jquery.js}"></script>
+
+<th:block th:if="${scripts != null}">
+    <th:block th:insert="${scripts}"></th:block>
 </th:block>
+<script>
+    $(document).ready(() => {
+        const path = window.location.pathname;
+        const pathArray = path.split('/').filter(p => p); // Removes empty strings
+        const $container = $('#breadcrumb-container');
+
+        let currentPath = '';
+
+        pathArray.forEach((segment, index) => {
+            currentPath += `/${segment}`;
+
+            // Capitalize the first letter for display (e.g., "students" -> "Students")
+            const displayName = segment.charAt(0).toUpperCase() + segment.slice(1);
+
+            if (index === pathArray.length - 1) {
+                // Last item is the current page (not a link)
+                $container.append(`<li class="breadcrumb-item active" aria-current="page">${displayName}</li>`);
+            } else {
+                // Intermediate items are clickable links
+                $container.append(`<li class="breadcrumb-item"><a href="${currentPath}">${displayName}</a></li>`);
+            }
+        });
+
+        console.log("Breadcrumbs generated for: " + path);
+    });
+</script>
 </body>
 </html>

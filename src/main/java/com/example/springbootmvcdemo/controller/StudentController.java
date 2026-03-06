@@ -1,18 +1,18 @@
 package com.example.springbootmvcdemo.controller;
 
+import com.example.springbootmvcdemo.dto.*;
 import com.example.springbootmvcdemo.dto.StudentDTO;
-import com.example.springbootmvcdemo.dto.StudentDTO;
-import com.example.springbootmvcdemo.dto.StudentDTO.SubjectDTO;
-import com.example.springbootmvcdemo.dto.SubjectEnrollmentDTO;
 import com.example.springbootmvcdemo.model.SubjectEnrollment;
 import com.example.springbootmvcdemo.model.Student;
 import com.example.springbootmvcdemo.model.Subject;
 import com.example.springbootmvcdemo.repository.EnrollmentRepository;
 import com.example.springbootmvcdemo.repository.StudentRepository;
 import com.example.springbootmvcdemo.repository.SubjectRepository;
+import com.example.springbootmvcdemo.service.ReportService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/students")
 public class StudentController implements CommandLineRunner {
+    @Autowired
+    ReportService reportService;
     Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     private StudentRepository studentRepository;
@@ -87,9 +89,30 @@ public class StudentController implements CommandLineRunner {
         }
     }
 
+    @GetMapping("/grades")
+    public String getGradesSummary(Model model){
+        List<StudentGradeSummaryDTO> studentsSummaries = studentRepository.findAll().stream()
+                .map(s -> new StudentGradeSummaryDTO(s))
+                .toList();
+        model.addAttribute("studentsSummaries", studentsSummaries);
+        return "students/grades-summaries";
+    }
+
+    @GetMapping("/student/{id}/report")
+    public String getStudentReport(@PathVariable UUID id, Model model) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        // Generate report
+        StudentReportDTO report = reportService.generateReport(student);
+        model.addAttribute("report", report);
+
+        return "students/report";
+    }
+
     @GetMapping("/create")
     public String CreateStudentForm(Model model) {
-        List<Subject> subjects = subjectRepository.findAll();
+        List<Subject> subjects = subjectRepository.findAll( );
         model.addAttribute("student", new Student());
         // Gender.values() allows us to loop through MALE/FEMALE in the dropdown
         model.addAttribute("genders", Student.Gender.values());

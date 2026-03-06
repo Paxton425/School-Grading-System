@@ -14,9 +14,15 @@ public class Result {
     @ManyToOne
     @JoinColumn(name = "assessment_id")
     private Assessment assessment;
+    @Enumerated(EnumType.STRING)
+    private Term term;
     @ManyToOne
     @JoinColumn(name = "enrollment_id")
     private SubjectEnrollment enrollment; // Links to the student-subject pair
+
+    public enum Term {
+        TERM_1, TERM_2, TERM_3, TERM_4
+    };
 
     public Long getId() {
         return Id;
@@ -44,5 +50,13 @@ public class Result {
 
     public void setEnrollment(SubjectEnrollment enrollment) {
         this.enrollment = enrollment;
+    }
+
+    public Term getTerm() {
+        return term;
+    }
+
+    public void setTerm(Term term) {
+        this.term = term;
     }
 }

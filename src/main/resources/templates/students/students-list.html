@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::body}, ~{::link})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::body}, ~{::link}, null)}">
 <head>
   <title>Student List | Grading System</title>
   <link rel="stylesheet" th:href="@{/css/students.css}">
@@ -18,7 +18,7 @@
 
   <div class="row mb-4">
     <div class="col-md-6">
-      <input type="text" id="studentSearch" class="form-control search-bar shadow-sm"
+      <input type="text" id="studentSearch" class="form-control border-primary search-bar shadow"
              placeholder="Search by name or surname..." onkeyup="filterStudents()">
     </div>
   </div>
@@ -48,9 +48,12 @@
           <td th:text="${student.gender}">Gender</td>
           <td class="text-muted" th:text="${student.birthDay}">2008-01-01</td>
           <td class="text-end px-3">
-            <a th:href="@{/students/student/{id}(id=${student.id})}" class="btn btn-outline-info btn-sm btn-action">View</a>
-            <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-outline-warning btn-sm btn-action">Edit</a>
-            <button class="btn btn-outline-danger btn-sm btn-action" onclick="'deleteStudent(\'' + ${student.id} + '\')'">Delete</button>
+            <a th:href="@{/students/student/{id}(id=${student.id})}" class="btn btn-outline-primary btn-sm btn-action" title="View Student">
+              <i class="bi fs-3 bi-person-vcard"></i>
+            </a>
+            <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-outline-warning btn-sm btn-action" title="Edit Student">
+              <i class="bi fs-3 bi-pencil-fill"></i>
+            </a>
           </td>
         </tr>
         <tr th:if="${#lists.isEmpty(students)}">

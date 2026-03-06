@@ -1,0 +1,66 @@
+/* Layout Fragment Style */
+.form-card {
+    border-top: 5px solid #0d6efd !important; /* Your Green Range */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.icon-box {
+    background: #0d6efd;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1.4rem;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: #495057;
+}
+
+/* Input Styling */
+.input-group-text {
+    background-color: transparent;
+    border-right: none;
+    color: #adb5bd;
+}
+
+.form-control, .form-select {
+    border-left: none;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: none;
+    border-color: #dee2e6;
+}
+
+.input-group:focus-within .input-group-text {
+    border-color: #dee2e6;
+    color: #0d6efd; /* Light Blue focus */
+}
+
+/* Custom Buttons */
+.btn-primary.btn-submit {
+    background-color: #0d6efd; /* Light Blue Range */
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary.btn-submit:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+}
+
+.custom-radio .form-check-input:checked {
+    background-color: #14b414;
+    border-color: #14b414;
+}

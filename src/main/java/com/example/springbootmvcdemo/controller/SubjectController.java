@@ -25,7 +25,7 @@ public class SubjectController {
         return "index";
     }
 
-    @GetMapping("/subject/{enrollmentId}/grades")
+    @GetMapping("/subject/grades/{enrollmentId}")
     public String viewSubjectEnrollmentGrades(@PathVariable Long enrollmentId, Model model) {
         // Find the specific enrollment that links this student to this subject
         SubjectEnrollment enrollment = enrollmentRepository.findById(enrollmentId)

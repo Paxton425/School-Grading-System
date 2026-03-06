@@ -11,17 +11,12 @@ public class Assessment {
     private String title;
     private Integer maxPoints;
     @Enumerated(EnumType.STRING)
-    private Term term;
-    @Enumerated(EnumType.STRING)
     private AssessmentType type; // SBA, PAT, EXAM
     @ManyToOne
     @JsonIgnoreProperties("assessments")
     private Subject subject;
 
     public enum AssessmentType { SBA, PAT, EXAM }
-    public enum Term {
-        TERM_1, TERM_2, TERM_3, TERM_4
-    };
 
     public Long getId() {
         return id;
@@ -41,14 +36,6 @@ public class Assessment {
 
     public void setMaxPoints(Integer maxPoints) {
         this.maxPoints = maxPoints;
-    }
-
-    public Term getTerm() {
-        return term;
-    }
-
-    public void setTerm(Term term) {
-        this.term = term;
     }
 
     public AssessmentType getType() {
