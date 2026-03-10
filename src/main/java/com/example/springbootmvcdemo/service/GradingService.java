@@ -9,34 +9,34 @@ import org.springframework.stereotype.Service;
 public class GradingService {
     public double calculateMaxGrade(SubjectEnrollment en){
         double max = en.getGrades().stream()
-                .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA)
-                .mapToDouble(g -> g.getScore())
+                .filter(a -> a.getAssessment().getType() == Assessment.AssessmentType.SBA)
+                .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .max().orElse(0.0);
         return max;
     }
     public double calculateMinGrade(SubjectEnrollment en){
         double min = en.getGrades().stream()
                 .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA)
-                .mapToDouble(g -> g.getScore())
+                .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .min().orElse(0.0);
         return min;
     }
     public double calculateGradeAverage(SubjectEnrollment en, Term term){
         double average = en.getGrades().stream()
                 .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA && g.getTerm() == term)
-                .mapToDouble(g -> g.getScore())
+                .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .average().orElse(0.0);
         return  average;
     }
-    public double calculateFinalMark(SubjectEnrollment se, Term term) {
-        double sba = se.getGrades().stream()
-                .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA && g.getTerm() == term)
-                .mapToDouble(g -> g.getScore())
+    public double calculateFinalMark(SubjectEnrollment en, Term term) {
+        double sba = en.getGrades().stream()
+                .filter(g -> g.getAssessment().getType().equals(Assessment.AssessmentType.SBA) && g.getTerm().equals(term))
+                .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .average().orElse(0.0);
 
-        double exam = se.getGrades().stream()
-                .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.EXAM)
-                .mapToDouble(g -> g.getScore())
+        double exam = en.getGrades().stream()
+                .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.EXAM && g.getTerm() == term)
+                .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .findFirst().orElse(0.0);
 
         // Apply SA FET Phase Weighting: 25% SBA, 75% Exam
@@ -50,5 +50,10 @@ public class GradingService {
         if(mark >= 40) return 3;
         if(mark >= 30) return 2;
         return 1;
+    }
+
+    double computeMark(Integer score, Integer maxPoints){
+        if (maxPoints == 0) return 0.0; // Avoid division by zero
+        return (score / (double) maxPoints) * 100; //Mark%
     }
 }

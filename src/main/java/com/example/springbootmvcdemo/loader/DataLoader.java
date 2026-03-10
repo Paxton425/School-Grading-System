@@ -81,35 +81,63 @@ public class DataLoader implements CommandLineRunner {
 
         // 4. Create the Assessment Definitions (Definitions usually exist already)
         // A Project (SBA)
-        Assessment term2Project = new Assessment();
-        term2Project.setTitle("Term 1 Programming Project");
-        term2Project.setType(Assessment.AssessmentType.SBA); // Projects fall under SBA
-        term2Project.setMaxPoints(50);
-        term2Project.setSubject(subject);
-        assessmentRepo.save(term2Project);
+        Assessment term1Project = new Assessment();
+        term1Project.setTitle("Term 1 Programming Project");
+        term1Project.setType(Assessment.AssessmentType.SBA); // Projects fall under SBA
+        term1Project.setMaxPoints(50);
+        term1Project.setSubject(subject);
+        assessmentRepo.save(term1Project);
+
+        Assessment term1Test = new Assessment();
+        term1Test.setTitle("Term 1 Programming Test");
+        term1Test.setType(Assessment.AssessmentType.SBA); // Projects fall under SBA
+        term1Test.setMaxPoints(100);
+        term1Test.setSubject(subject);
+        assessmentRepo.save(term1Test);
 
         // A PAT
         Assessment itPat = new Assessment();
         itPat.setTitle("Coding Practicals 1");
         itPat.setType(Assessment.AssessmentType.PAT);
-        itPat.setMaxPoints(100);
+        itPat.setMaxPoints(60);
         itPat.setSubject(subject);
         assessmentRepo.save(itPat);
+
+        Assessment exam = new Assessment();
+        exam.setTitle("Coding Exam");
+        exam.setType(Assessment.AssessmentType.EXAM);
+        exam.setMaxPoints(120);
+        exam.setSubject(subject);
+        assessmentRepo.save(exam);
 
         // 5. Insert the actual Achievement (The Student's Marks)
         Result projectGrade = new Result();
         projectGrade.setEnrollment(enrollment);
-        projectGrade.setAssessment(term2Project);
-        projectGrade.setTerm(Result.Term.TERM_2);
-        projectGrade.setScore(42.0); // 42/50
+        projectGrade.setAssessment(term1Project);
+        projectGrade.setTerm(Result.Term.TERM_1);
+        projectGrade.setScore(42); // 42/50
         achievementRepo.save(projectGrade);
+
+        Result testGrade = new Result();
+        testGrade.setEnrollment(enrollment);
+        testGrade.setAssessment(term1Test);
+        testGrade.setTerm(Result.Term.TERM_1);
+        testGrade.setScore(78); // 78/100
+        achievementRepo.save(testGrade);
 
         Result patGrade = new Result();
         patGrade.setEnrollment(enrollment);
         patGrade.setTerm(Result.Term.TERM_1);
         patGrade.setAssessment(itPat);
-        patGrade.setScore(85.0); // 85/100
+        patGrade.setScore(85); // 85/100
         achievementRepo.save(patGrade);
+
+        Result examGrade = new Result();
+        examGrade.setEnrollment(enrollment);
+        examGrade.setTerm(Result.Term.TERM_1);
+        examGrade.setAssessment(exam);
+        examGrade.setScore(98); // 98/120
+        achievementRepo.save(examGrade);
     }
 
     @Override

@@ -10,7 +10,7 @@ public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long Id;
-    private Double score;
+    private Integer score; //eg. 90/100
     @ManyToOne
     @JoinColumn(name = "assessment_id")
     private Assessment assessment;
@@ -28,11 +28,11 @@ public class Result {
         return Id;
     }
 
-    public Double getScore() {
+    public Integer getScore() {
         return score;
     }
 
-    public void setScore(Double score) {
+    public void setScore(Integer score) {
         this.score = score;
     }
 

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{common/layout :: layout(~{::content}, ~{::link}, ~{::scripts})}">
+      th:replace="~{common/layout :: layout(~{::content}, ~{::link}, ~{::script})}">
 <head>
   <link rel="stylesheet" th:href="@{/css/students.css}">
 </head>
 <body>
 
 <div th:fragment="content" class="container-fluid py-4">
-  <div class="card report-header border-0 shadow-sm mb-4 bg-white border-start border-5 border-success">
+  <div class="card report-header border-0 shadow-sm mb-4 bg-white border-start border-5 border-primary">
     <div class="card-body p-4">
       <div class="row align-items-center">
         <div class="col-md-7">
@@ -32,16 +32,19 @@
     <div class="table-responsive">
       <table class="table table-bordered align-middle mb-0 text-center">
         <thead class="bg-dark text-white">
-        <tr>
-          <th rowspan="2" class="align-middle text-start ps-4">Learning Area (Subject)</th>
-          <th th:each="term : ${T(com.example.springbootmvcdemo.model.Result.Term).values()}"
+          <tr>
+            <th rowspan="2" class="align-middle text-start ps-4">Learning Area (Subject)</th>
+            <th th:each="term : ${T(com.example.springbootmvcdemo.model.Result.Term).values()}"
               colspan="3" th:text="${term}">Term X</th>
-        </tr>
-        <tr class="bg-light text-muted x-small">
-          <th th:each="i : ${#numbers.sequence(1, 4)}" th:remove="tag">
-          <th>%</th><th>Avg</th><th>Lvl</th>
-          </th>
-        </tr>
+          </tr>
+
+          <tr class="bg-light text-muted x-small">
+            <th:block th:each="i : ${#numbers.sequence(1, 4)}">
+              <th>%</th>
+              <th>Avg</th>
+              <th>Lvl</th>
+            </th:block>
+          </tr>
         </thead>
         <tbody>
         <tr th:each="entry : ${report.results}">
@@ -49,12 +52,12 @@
 
           <th:block th:each="term : ${T(com.example.springbootmvcdemo.model.Result.Term).values()}">
             <td th:with="res=${entry.value.get(term)}">
-              <span th:text="${res != null ? res.finalGrade + '%' : '-'}"></span>
+              <span class="subject-grade" th:text="${res != null ? res.finalGrade + '%' : '-'}"></span>
             </td>
-            <td th:with="res=${entry.value.get(term)}" class="text-muted">
+            <td class="subject-average text-muted" th:with="res=${entry.value.get(term)}">
               <small th:text="${res != null ? res.average + '%' : '-'}"></small>
             </td>
-            <td th:with="res=${entry.value.get(term)}" class="fw-bold text-primary">
+            <td class="subject-level fw-bold text-primary" th:with="res=${entry.value.get(term)}">
               <span th:text="${res != null ? res.gradeLevel : '-'}"></span>
             </td>
           </th:block>
@@ -74,6 +77,26 @@
     </div>
   </div>
 </div>  
+<script>
+  $(document).ready(() => {
+    $('.subject-grade').each(function() {
+      const val = parseFloat($(this).text());
 
+      console.log('grade', val);
+
+      // Ensure it's a valid number before styling
+      if (!isNaN(val)) {
+        if (val < 50) {
+          $(this).addClass('text-danger'); // Red
+        } else if (val >= 50 && val < 75) {
+          $(this).addClass('text-warning'); // Yellow/Orange
+        } else if (val >= 75) {
+          $(this).addClass('text-success'); // Green
+        }
+      }
+    });
+  });
+
+</script>
 </body>
 </html>

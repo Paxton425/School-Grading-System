@@ -98,9 +98,9 @@ public class StudentController implements CommandLineRunner {
         return "students/grades-summaries";
     }
 
-    @GetMapping("/student/{id}/report")
-    public String getStudentReport(@PathVariable UUID id, Model model) {
-        Student student = studentRepository.findById(id)
+    @GetMapping("/grades/report/{studentId}")
+    public String getStudentReport(@PathVariable UUID studentId, Model model) {
+        Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         // Generate report

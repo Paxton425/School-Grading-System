@@ -21,9 +21,9 @@ public class StudentReportDTO {
     private TreeMap<String, TreeMap<Term, TermResult>> results;
 
    public static class TermResult {
-       double finalGrade;
-       double average;
-       Integer gradeLevel;
+       public double finalGrade;
+       public double average;
+       public Integer gradeLevel;
 
        public TermResult( double finalGrade, double average, Integer gradeLevel) {
            this.finalGrade = finalGrade;

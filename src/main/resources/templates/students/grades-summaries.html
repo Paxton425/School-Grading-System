@@ -55,10 +55,10 @@
                         <i class="bi bi-caret-down-fill me-1"></i>[[${dto.min}]]%
                     </td>
                     <td class="text-center">
-                        <a th:href="@{/students/student/{id}/report(id=${dto.id})}"
+                        <a th:href="@{/students/grades/report/{id}(id=${dto.id})}"
                            class="btn btn-light btn-sm btn-action"
-                           title="View Detailed Achievements">
-                            <i class="bi bi-person-vcard text-primary"></i>
+                           title="Result Report">
+                            <i class="bi bi-person-vcard text-primary fs-3"></i>
                         </a>
                     </td>
                 </tr>
