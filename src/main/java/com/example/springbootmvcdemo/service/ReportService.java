@@ -69,7 +69,7 @@ public class ReportService {
         report.setHighestMark(highestMark);
         report.setLowestMark(lowestMark);
 
-        return report;
+          return report;
     }
 
 }

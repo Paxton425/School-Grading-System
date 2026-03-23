@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::content}, ~{link}, ~{scripts})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Assessment Details</title>
+    <link rel="stylesheet" th:href="@{/css/assessments.css}">
+</head>
+<body>
+<div th:fragment="content" id="assessment-detail-content">
+    <header class="dashboard-head mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/assessments}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <div>
+                <h1 th:text="${assessment.title}">Assessment Title</h1>
+                <p class="mb-0">
+                    <span th:class="'type-badge ' + ${assessment.type}" th:text="${assessment.type}">TYPE</span>
+                    <span class="ms-2 text-muted" th:text="${assessment.subject?.name}">Subject Name</span>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card p-4 mb-4">
+                <h4 class="fw-bold mb-3">Description</h4>
+                <p class="text-secondary" style="line-height: 1.6;" th:text="${assessment.description}">
+                    No description provided for this assessment.
+                </p>
+
+                <hr class="my-4">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted text-uppercase small fw-bold">Maximum Score</h6>
+                        <h2 class="text-primary"><span th:text="${assessment.maxPoints}">0</span> <small class="fs-6 text-secondary">Points</small></h2>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted text-uppercase small fw-bold">Submissions Received</h6>
+                        <h2 class="text-success" th:text="${submissionCount ?: 0}">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4">
+                <h4 class="fw-bold mb-3">Timeline</h4>
+                <div class="text-center mb-2">
+        <span th:class="${isOverdue ? 'badge bg-danger' : 'badge bg-primary'}"
+              th:text="${statusText}">
+            4 days left
+        </span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center position-relative mt-4 mb-2">
+                    <div class="text-center" style="z-index: 2;">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px; margin: 0 auto;">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <p class="fw-bold mb-0">Issue Date</p>
+                        <small class="text-muted" th:text="${assessment.assignmentIssueDate}">Mar 01, 2026</small>
+                    </div>
+
+                    <div class="position-relative" style="height: 6px; background: #e2e8f0; flex-grow: 1; margin-bottom: 45px; margin-left: -10px; margin-right: -10px; border-radius: 10px; overflow: hidden;">
+                        <div th:style="'width:' + ${timeProgress} + '%; height: 100%; transition: width 1s ease-in-out;'"
+                             th:class="${isOverdue ? 'bg-danger' : 'bg-primary'}">
+                        </div>
+                    </div>
+
+                    <div class="text-center" style="z-index: 2;">
+                        <div th:class="${isOverdue ? 'bg-danger' : 'bg-secondary'} + ' text-white rounded-circle d-flex align-items-center justify-content-center mb-2'"
+                             style="width: 40px; height: 40px; margin: 0 auto;">
+                            <i class="bi bi-alarm"></i>
+                        </div>
+                        <p class="fw-bold mb-0">Deadline</p>
+                        <small class="text-muted" th:text="${assessment.assignmentDeadline}">Mar 25, 2026</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card p-4 mb-4" style="min-height: auto; border-left: 4px solid #4f46e5;">
+                <h5 class="fw-bold mb-3">Management</h5>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-outline-primary text-start" th:href="@{/assessments/record/{id}(id=${assessment.id})}"><i class="bi bi-clipboard2-plus"></i> Add Marks</a>
+                    <a class="btn btn-outline-primary text-start" th:href="@{/assessments/submissions/{id}(id=${assessment.id})}"><i class="bi bi-clipboard2-check"></i> View Submissions</a>
+                    <a class="btn btn-outline-primary text-start" th:href="@{/assessments/edit/{id}(id=${assessment.id})}"><i class="bi bi-pencil-square me-2"></i> Edit Template</a>
+                    <button class="btn btn-outline-success text-start"><i class="bi bi-file-earmark-arrow-down me-2"></i> Export Blank Form</button>
+                    <button class="btn btn-outline-danger text-start"><i class="bi bi-trash3 me-2"></i> Delete Assessment</button>
+                </div>
+            </div>
+
+            <div class="card p-4" style="min-height: auto;">
+                <h5 class="fw-bold mb-3">Subject Info</h5>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="avatar-sm bg-light text-primary">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 fw-bold" th:text="${assessment.subject?.name}">Subject Name</p>
+                        <small class="text-muted">Grade 12 Curriculum</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

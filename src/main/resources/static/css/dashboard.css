@@ -1,0 +1,234 @@
+/* Dashboard Main Wrapper */
+#dashboard-content {
+    padding: 25px;
+    background: #f8fafc;
+    color: #1e293b;
+    min-height: 100%;    /* It will now only take up the remaining space of the parent */
+    display: block;
+    box-sizing: border-box;
+}
+
+/* Ensure the top header of the dashboard has its own margin */
+.dashboard-head {
+    margin-bottom: 25px;
+    display: block;
+}
+
+/* Topbar Typography */
+.dashboard-head h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+}
+.dashboard-head p { color: #64748b; }
+
+.actions {
+    display: flex;       /* The magic wand for rows */
+    flex-direction: row; /* Force them to stay side-by-side */
+    align-items: center; /* Vertical center alignment */
+    gap: 12px;           /* Space between the select, input, and button */
+    flex-wrap: wrap;     /* Allows it to stack nicely on small mobile screens */
+}
+
+/* Ensure the div around the input doesn't break the layout */
+.actions div {
+    display: inline-block;
+}
+
+/* Filter Actions */
+.actions input, .actions select {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #1e293b;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.actions input:focus {
+    outline: none;
+    border-color: #3b82f6; /* Blue highlight */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* KPI Grid - Clean Cards */
+.kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kpi {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.kpi span {
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+}
+
+.kpi h2 { font-size: 32px; font-weight: 800; margin: 8px 0; color: #1e293b; }
+
+/* Color Highlights for KPIs */
+.kpi:nth-child(1) { border: 1px solid #3b82f6; border-top: 4px solid #3b82f6; } /* Blue: Total */
+.kpi:nth-child(2) { border: 1px solid #10b981; border-top: 4px solid #10b981; } /* Green: Avg */
+.kpi:nth-child(3) { border: 1px solid #f59e0b; border-top: 4px solid #f59e0b; } /* Yellow: Pass */
+.kpi:nth-child(4) { border: 1px solid #ef4444; border-top: 4px solid #ef4444; } /* Red: At Risk */
+
+/* Update .grid to handle row heights better */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(350px, auto); /* Gives cards a baseline height */
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Update the card to allow charts to fill the space better */
+.card {
+    background: #ffffff;
+    padding: 20px; /* Reduced from 24px */
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    min-height: 350px; /* Ensure a consistent minimum height */
+}
+
+/* Let the container grow into the available card space */
+.card > div[style*="position: relative"] {
+    flex-grow: 1;
+    width: 100%;
+    margin-top: 10px; /* Space between title and chart */
+}
+
+/* Remove the strict max-height that was squashing them */
+.card canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #334155;
+}
+
+/* Table Design */
+.table-card th {
+    text-align: left;
+    padding: 14px;
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.table-card td {
+    padding: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+/* Status Labels */
+.pass {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.fail {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Activity Icons */
+.activity li i {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #f1f5f9;
+}
+
+/* Restoring the Bottom Layout */
+.bottom {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Table gets more space than Activity */
+    gap: 20px;
+    align-items: start; /* Prevents small cards from stretching to match tall ones */
+}
+
+/* Specific override for the Table Card - it shouldn't have a fixed height if data is short */
+.table-card.card {
+    min-height: auto;
+    padding: 0; /* Remove padding so header/table looks integrated */
+}
+
+.table-card h3 {
+    padding: 24px 24px 10px 24px;
+}
+
+/* Activity Feed Overhaul */
+.activity.card {
+    min-height: auto; /* Let content dictate height */
+}
+
+.activity ul {
+    list-style: none;
+    padding: 0;
+}
+
+.activity li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.activity li:last-child {
+    border-bottom: none;
+}
+
+/* Modernizing the Table */
+.table-card table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-card th {
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table-card td {
+    padding: 16px 24px;
+}

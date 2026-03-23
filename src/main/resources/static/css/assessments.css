@@ -1,0 +1,75 @@
+/*Assessments View*/
+/* Type Badges */
+.type-badge {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+/* SBA - Informative Blue */
+.type-badge.SBA {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+/* PAT - Creative/Action Green */
+.type-badge.PAT {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+/* EXAM - Urgent/High Stakes Red */
+.type-badge.EXAM {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Row Hover */
+.table-card tbody tr:hover {
+    background-color: #f8fafc;
+    cursor: pointer;
+}
+
+.text-primary {
+    color: #4f46e5 !important; /* Indigo for links/titles */
+}
+
+/*Assessment Details View*/
+/* Timeline styling */
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+/* Ensure the detailed view cards don't have the "grid" height problem */
+#assessment-detail-content .card {
+    min-height: auto !important;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/*Assessment Form*/
+/* Form Enhancements */
+.form-control:focus, .form-select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.1);
+}
+
+.form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: #475569;
+}
+
+/* Specific highlight for dates */
+input[type="date"] {
+    cursor: pointer;
+}

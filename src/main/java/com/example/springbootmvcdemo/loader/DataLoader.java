@@ -79,32 +79,45 @@ public class DataLoader implements CommandLineRunner {
         enrollment2.setTeacher(teacher);
         enrollment2 = enrollmentRepo.save(enrollment2);
 
-        // 4. Create the Assessment Definitions (Definitions usually exist already)
-        // A Project (SBA)
+        // 1. A Project (SBA) - Issued early, due mid-term
         Assessment term1Project = new Assessment();
         term1Project.setTitle("Term 1 Programming Project");
-        term1Project.setType(Assessment.AssessmentType.SBA); // Projects fall under SBA
+        term1Project.setDescription("Comprehensive software development task focusing on CRUD operations, data validation, and GUI design basics.");
+        term1Project.setAssignmentIssueDate(LocalDate.of(2026, 2, 1));
+        term1Project.setAssignmentDeadline(LocalDate.of(2026, 3, 15));
+        term1Project.setType(Assessment.AssessmentType.SBA);
         term1Project.setMaxPoints(50);
         term1Project.setSubject(subject);
         assessmentRepo.save(term1Project);
 
+        // 2. A Standard Test (SBA) - Short window
         Assessment term1Test = new Assessment();
         term1Test.setTitle("Term 1 Programming Test");
-        term1Test.setType(Assessment.AssessmentType.SBA); // Projects fall under SBA
+        term1Test.setDescription("Theoretical and practical assessment covering Object-Oriented Programming concepts, loops, and array manipulation.");
+        term1Test.setAssignmentIssueDate(LocalDate.of(2026, 3, 20));
+        term1Test.setAssignmentDeadline(LocalDate.of(2026, 3, 21)); // 24-hour take-home or controlled test
+        term1Test.setType(Assessment.AssessmentType.SBA);
         term1Test.setMaxPoints(100);
         term1Test.setSubject(subject);
         assessmentRepo.save(term1Test);
 
-        // A PAT
+        // 3. A PAT (Practical Assessment Task) - Long duration
         Assessment itPat = new Assessment();
         itPat.setTitle("Coding Practicals 1");
+        itPat.setDescription("Phase 1 of the Practical Assessment Task: Requirement analysis, database normalization, and initial architectural wireframing.");
+        itPat.setAssignmentIssueDate(LocalDate.of(2026, 2, 15));
+        itPat.setAssignmentDeadline(LocalDate.of(2026, 5, 30));
         itPat.setType(Assessment.AssessmentType.PAT);
         itPat.setMaxPoints(60);
         itPat.setSubject(subject);
         assessmentRepo.save(itPat);
 
+        // 4. Final Exam - The big one
         Assessment exam = new Assessment();
         exam.setTitle("Coding Exam");
+        exam.setDescription("Summative year-end examination covering the full curriculum: Advanced data structures, recursion, and complex problem-solving.");
+        exam.setAssignmentIssueDate(LocalDate.of(2026, 10, 15));
+        exam.setAssignmentDeadline(LocalDate.of(2026, 11, 15));
         exam.setType(Assessment.AssessmentType.EXAM);
         exam.setMaxPoints(120);
         exam.setSubject(subject);

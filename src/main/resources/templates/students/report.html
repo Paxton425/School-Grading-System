@@ -79,12 +79,10 @@
 </div>  
 <script>
   $(document).ready(() => {
+
+    //Color code number based on achievement level.
     $('.subject-grade').each(function() {
       const val = parseFloat($(this).text());
-
-      console.log('grade', val);
-
-      // Ensure it's a valid number before styling
       if (!isNaN(val)) {
         if (val < 50) {
           $(this).addClass('text-danger'); // Red

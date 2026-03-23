@@ -42,7 +42,7 @@ body {
 .sidebar-content {
     padding: 0;
 }
-.sidebar-nav{
+.sidebar-nav {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -50,18 +50,46 @@ body {
 }
 .sidebar-nav-section {
     padding: 0 0 0 12px;
+    margin-bottom: 2px;
 }
-.sidebar-nav{
+.sidebar-nav-section > p {
+    color: #434343;
+    margin-bottom: 0;
 }
 .sidebar-nav > .nav-item {
-    height: 46px;
-    padding-left: 12px;
+    height: 42px;
+    padding-left: 22px;
     display: flex;
     align-items: center;
 }
+.sidebar-nav > .nav-item {
+    height: 42px;
+    padding-left: 22px;
+    display: flex;
+    align-items: center;
+
+    /* define border upfront */
+    border: 1px solid transparent;
+    border-left-width: 4px;
+
+    /* start with no rounding */
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    transition: all 0.25s ease;
+}
+
 .sidebar-nav > .nav-item:hover {
-    background-color: #0d6efd;
-    color: #fff;
+    color: #74b1d3;
+
+    /* just change color, not structure */
+    border-color: #0081cf;
+
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+
+    /* smoother than removing border */
+    border-right-color: transparent;
 }
 
 .main-section {
@@ -71,7 +99,7 @@ body {
     flex-direction: column;
 }
 .navbar {
-    height: 68px;
+    min-height: 68px;
     max-height: 68px;
     padding: 0 12px;
     display: flex;
@@ -82,13 +110,19 @@ body {
     width: 100%;
     display: flex;
     align-items: center;
-    border-bottom: #14b414 solid 1px;
+    border-bottom: #d6d6d6 solid 1px;
 }
-/* 3. KILL the default Bootstrap breadcrumb margins */
-.breadcrumb {
-    margin-bottom: 0 !important; /* This is likely the culprit */
-    padding: 0;
-    background: transparent;
+/* Remove underline from breadcrumb links */
+.breadcrumb-item a {
+    text-decoration: none;
+    color: #0081cf; /* Slate grey to match your dashboard theme */
+    transition: color 0.2s ease-in-out;
+}
+
+/* Add a subtle color change on hover instead of an underline */
+.breadcrumb-item a:hover {
+    color: #3b82f6; /* Blue highlight */
+    text-decoration: none;
 }
 
 

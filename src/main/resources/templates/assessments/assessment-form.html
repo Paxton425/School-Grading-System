@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::content}, ~{link}, ~{scripts})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Assessment Form</title>
+    <link rel="stylesheet" th:href="@{/css/assessments.css}">
+</head>
+<body>
+<div th:fragment="content" id="create-assessment-content">
+    <header class="dashboard-head mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/assessments}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-x-lg"></i> Cancel
+            </a>
+            <div>
+                <h1 th:text="${assessment.id == null ? 'Define New Assessment' : 'Edit Assessment'}">
+                    Define New Assessment
+                </h1>
+                <p th:text="${assessment.id == null ? 'Set up a new task template' : 'Updating ' + assessment.title}">
+                    Set up the template and grading criteria for a new task
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <div class="card p-4">
+        <form th:action="@{/assessments/save}" th:object="${assessment}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Assessment Title</label>
+                        <input type="text" th:field="*{title}" class="form-control" placeholder="e.g. Term 1 Control Test" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea th:field="*{description}" class="form-control" rows="6"
+                                  placeholder="Describe the scope, curriculum areas, and requirements..."></textarea>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 border-start ps-lg-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-primary">Subject</label>
+                        <select th:field="*{subject}" class="form-select" required>
+                            <option value="" disabled selected>Select a subject...</option>
+                            <option th:each="s : ${subjects}" th:value="${s.id}" th:text="${s.name}">Mathematics</option>
+                        </select>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold">Type</label>
+                            <select th:field="*{type}" class="form-select">
+                                <option th:each="type : ${T(com.example.springbootmvcdemo.model.Assessment.AssessmentType).values()}"
+                                        th:value="${type}" th:text="${type}"></option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold">Max Points</label>
+                            <input type="number" th:field="*{maxPoints}" class="form-control" placeholder="100">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-success"><i class="bi bi-calendar-check me-1"></i> Issue Date</label>
+                        <input type="date"
+                               th:name="assignmentIssueDate"
+                               th:value="${assessment.assignmentIssueDate != null ? #temporals.format(assessment.assignmentIssueDate, 'yyyy-MM-dd') : ''}"
+                               class="form-control">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-danger"><i class="bi bi-calendar-x me-1"></i> Deadline</label>
+                        <input type="date"
+                               th:name="assignmentDeadline"
+                               th:value="${assessment.assignmentDeadline != null ? #temporals.format(assessment.assignmentDeadline, 'yyyy-MM-dd') : ''}"
+                               class="form-control">
+                    </div>
+
+                    <div class="d-grid pt-3">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-cloud-arrow-up-fill"></i> Save Assessment Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

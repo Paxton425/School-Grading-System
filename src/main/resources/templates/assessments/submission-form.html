@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::content}, ~{link}, ~{scripts})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Assessments</title>
+    <link rel="stylesheet" th:href="@{/css/assessments.css}">
+</head>
+<body>
+<div th:fragment="content">
+    <header class="dashboard-head mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/assessments}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+            <div>
+                <h1>Record Student Result</h1>
+                <p>Capturing marks for: <strong th:text="${assessment.title}">Assessment Title</strong></p>
+            </div>
+        </div>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card bg-light border-0 mb-4">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted small fw-bold">Assessment Details</h6>
+                    <hr>
+                    <div class="mb-3">
+                        <label class="d-block text-secondary small">Subject</label>
+                        <span class="fw-bold" th:text="${assessment.subject.name}">Subject</span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="d-block text-secondary small">Type & Max Points</label>
+                        <span class="badge bg-primary" th:text="${assessment.type}">SBA</span>
+                        <span class="fw-bold ms-2" th:text="${assessment.maxPoints + ' pts'}">100 pts</span>
+                    </div>
+                    <div>
+                        <label class="d-block text-secondary small">Deadline</label>
+                        <span th:text="${#temporals.format(assessment.assignmentDeadline, 'dd MMMM yyyy')}">Date</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card p-4 shadow-sm">
+                <form th:action="@{/assessments/results/save}" th:object="${result}" method="post">
+                    <input type="hidden" name="assessment" th:value="${assessment.id}">
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">1. Select Student</label>
+                        <select th:field="*{enrollment}" class="form-select form-select-lg" required>
+                            <option value="" disabled selected>-- Choose a student enrolled in this subject --</option>
+                            <option th:each="en : ${enrollments}"
+                                    th:value="${en.id}"
+                                    th:text="${en.student.firstName + ' ' + en.student.lastName + ' (Grade ' + en.student.grade + ')'}">
+                                Student Name
+                            </option>
+                        </select>
+                        <div class="form-text">Only students enrolled in <span th:text="${assessment.subject.name}"></span> are listed.</div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">2. Score Achieved</label>
+                            <div class="input-group input-group-lg">
+                                <input type="number" th:field="*{score}" class="form-control"
+                                       th:max="${assessment.maxPoints}" min="0" required placeholder="0">
+                                <span class="input-group-text" th:text="'/ ' + ${assessment.maxPoints}">/ 50</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">3. Term</label>
+                            <select th:field="*{term}" class="form-select form-select-lg">
+                                <option th:each="t : ${T(com.example.springbootmvcdemo.model.Result.Term).values()}"
+                                        th:value="${t}" th:text="${t}">TERM_1</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-check-circle-fill me-2"></i> Submit Mark
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
