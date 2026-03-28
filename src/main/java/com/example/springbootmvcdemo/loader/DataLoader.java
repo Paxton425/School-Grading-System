@@ -7,32 +7,54 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Component
 public class DataLoader implements CommandLineRunner {
     @Autowired private StudentRepository studentRepo;
     @Autowired private SubjectRepository subjectRepo;
-    @Autowired private EnrollmentRepository enrollmentRepo;
+    @Autowired private GradesRepository gradesRepository;
     @Autowired private AssessmentRepository assessmentRepo;
     @Autowired private ResultRepository achievementRepo;
-    @Autowired private TeacherRepository teacherRepo;
+    @Autowired private InstructorRepository teacherRepo;
+    @Autowired private ClassRepository classRepository;
 
     public void insertSampleData() {
+        //0.Create Classes
+        SchoolClass classA = new SchoolClass();
+        classA.setTitle("A");
+        classA.setGrade(10);
+        classA.setClassYear(2026);
+        classA = classRepository.save(classA);
+
+        SchoolClass classB = new SchoolClass();
+        classB.setTitle("B");
+        classB.setGrade(10);
+        classB.setClassYear(2026);
+        classB = classRepository.save(classB);
+
+        SchoolClass classC = new SchoolClass();
+        classC.setTitle("C");
+        classC.setGrade(10);
+        classC.setClassYear(2026);
+        classC = classRepository.save(classC);
+
         // 1. Create the Student
         Student student = new Student();
         student.setFirstName("Thabo");
         student.setLastName("Mokoena");
-        student.setGrade(10);
         student.setGender(Student.Gender.MALE);
         student.setBirthDay(LocalDate.of(2009, Month.AUGUST, 12));
+        student.setSchoolClass(classA);
         student = studentRepo.save(student);
 
         Student student2 = new Student();
         student2.setFirstName("Lebogang");
         student2.setLastName("Moroko");
-        student2.setGrade(10);
         student2.setGender(Student.Gender.FEMALE);
         student2.setBirthDay(LocalDate.of(2009, Month.JUNE, 22));
+        student2.setSchoolClass(classB);
         student2 = studentRepo.save(student2);
 
         // 2. Create a Subject
@@ -54,30 +76,30 @@ public class DataLoader implements CommandLineRunner {
         subject2.setExamWeight(0.75);
         subject2 = subjectRepo.save(subject2);
 
-        Teacher teacher = new Teacher();
-        teacher.setFirstName("Sthandiwe");
-        teacher.setLastName("Zwane");
-        teacher.setEmployeeId("EM-001");
-        teacher.setDepartment(Department.SERVICES_AND_TECH);
-        teacher.setRole(Teacher.Role.HOD);
-        teacher.setGender(Teacher.Gender.FEMALE);
-        teacher.setPhone("08976543");
-        teacher.setEmail("sthandiwe@gmail.com");
-        teacher = teacherRepo.save(teacher);
+        Instructor instructor = new Instructor();
+        instructor.setFirstName("Sthandiwe");
+        instructor.setLastName("Zwane");
+        instructor.setEmployeeId("EM-001");
+        instructor.setDepartment(Department.SERVICES_AND_TECH);
+        instructor.setRole(Instructor.Role.HOD);
+        instructor.setGender(Instructor.Gender.FEMALE);
+        instructor.setPhone("08976543");
+        instructor.setEmail("sthandiwe@gmail.com");
+        instructor = teacherRepo.save(instructor);
 
 
         // 3. Create the Enrollment (Links Thabo to IT)
-        SubjectEnrollment enrollment = new SubjectEnrollment();
-        enrollment.setStudent(student);
-        enrollment.setSubject(subject);
-        enrollment.setTeacher(teacher);
-        enrollment = enrollmentRepo.save(enrollment);
+        SubjectGrades subjectGrades = new SubjectGrades();
+        subjectGrades.setStudent(student);
+        subjectGrades.setSubject(subject);
+        subjectGrades.setInstructor(instructor);
+        subjectGrades = gradesRepository.save(subjectGrades);
 
-        SubjectEnrollment enrollment2 = new SubjectEnrollment();
-        enrollment2.setStudent(student2);
-        enrollment2.setSubject(subject2);
-        enrollment2.setTeacher(teacher);
-        enrollment2 = enrollmentRepo.save(enrollment2);
+        SubjectGrades subjectGrades2 = new SubjectGrades();
+        subjectGrades2.setStudent(student2);
+        subjectGrades2.setSubject(subject2);
+        subjectGrades.setInstructor(instructor);
+        subjectGrades = gradesRepository.save(subjectGrades2);
 
         // 1. A Project (SBA) - Issued early, due mid-term
         Assessment term1Project = new Assessment();
@@ -125,28 +147,28 @@ public class DataLoader implements CommandLineRunner {
 
         // 5. Insert the actual Achievement (The Student's Marks)
         Result projectGrade = new Result();
-        projectGrade.setEnrollment(enrollment);
+        projectGrade.setSubjectGrades(subjectGrades);
         projectGrade.setAssessment(term1Project);
         projectGrade.setTerm(Result.Term.TERM_1);
         projectGrade.setScore(42); // 42/50
         achievementRepo.save(projectGrade);
 
         Result testGrade = new Result();
-        testGrade.setEnrollment(enrollment);
+        testGrade.setSubjectGrades(subjectGrades);
         testGrade.setAssessment(term1Test);
         testGrade.setTerm(Result.Term.TERM_1);
         testGrade.setScore(78); // 78/100
         achievementRepo.save(testGrade);
 
         Result patGrade = new Result();
-        patGrade.setEnrollment(enrollment);
+        patGrade.setSubjectGrades(subjectGrades);
         patGrade.setTerm(Result.Term.TERM_1);
         patGrade.setAssessment(itPat);
         patGrade.setScore(85); // 85/100
         achievementRepo.save(patGrade);
 
         Result examGrade = new Result();
-        examGrade.setEnrollment(enrollment);
+        examGrade.setSubjectGrades(subjectGrades);
         examGrade.setTerm(Result.Term.TERM_1);
         examGrade.setAssessment(exam);
         examGrade.setScore(98); // 98/120

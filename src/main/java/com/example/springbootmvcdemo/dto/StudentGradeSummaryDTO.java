@@ -2,7 +2,6 @@ package com.example.springbootmvcdemo.dto;
 
 import com.example.springbootmvcdemo.model.Result;
 import com.example.springbootmvcdemo.model.Student;
-import com.example.springbootmvcdemo.model.SubjectEnrollment;
 import com.example.springbootmvcdemo.service.GradingService;
 import com.example.springbootmvcdemo.service.GradingSummaryService;
 
@@ -23,9 +22,9 @@ public class StudentGradeSummaryDTO {
         this.id = student.getId();
         this.firstName = student.getFirstName();
         this.lastName = student.getLastName();
-        this.grade = student.getGrade();
+        this.grade = student.getSchoolClass().getGrade();
 
-        var enrollmentsFinalScores = student.getEnrollments().stream()
+        var enrollmentsFinalScores = student.getSubjectGrades().stream()
                 .mapToDouble(e -> new GradingService().calculateFinalMark(e, Result.Term.TERM_1))
                 .toArray();
 

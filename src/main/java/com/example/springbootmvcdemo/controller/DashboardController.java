@@ -1,9 +1,7 @@
 package com.example.springbootmvcdemo.controller;
 
-import com.example.springbootmvcdemo.model.Result;
-import com.example.springbootmvcdemo.model.Student;
 import com.example.springbootmvcdemo.repository.StudentRepository;
-import com.example.springbootmvcdemo.repository.TeacherRepository;
+import com.example.springbootmvcdemo.repository.InstructorRepository;
 import com.example.springbootmvcdemo.service.GradingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(path = "/")
@@ -22,10 +19,10 @@ public class DashboardController {
     GradingService gradingService;
 
     StudentRepository studentRepository;
-    TeacherRepository teacherRepository;
-    DashboardController(StudentRepository studentRepository, TeacherRepository teacherRepository){
+    InstructorRepository instructorRepository;
+    DashboardController(StudentRepository studentRepository, InstructorRepository instructorRepository){
         this.studentRepository = studentRepository;
-        this.teacherRepository = teacherRepository;
+        this.instructorRepository = instructorRepository;
     }
 
     @GetMapping("/dashboard")

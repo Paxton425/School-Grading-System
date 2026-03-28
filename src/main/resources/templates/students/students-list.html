@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::body}, ~{::link}, null)}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::body}, ~{::link}, ~{::scripts})}">
 <head>
   <title>Student List | Grading System</title>
   <link rel="stylesheet" th:href="@{/css/students.css}">
@@ -25,7 +25,7 @@
 
   <div class="table-container shadow-sm">
     <div class="table-responsive">
-      <table class="table align-middle border-0">
+      <table id="studentDataTable" class="table align-middle border-0" style="width:100%">
         <thead class="text-muted small text-uppercase">
         <tr>
           <th class="border-0 px-3">Student Name</th>
@@ -42,8 +42,7 @@
             <div class="small text-muted" th:text="${student.gender == 'MALE' ? 'Male' : 'Female'}">Gender</div>
           </td>
           <td>
-                            <span class="badge bg-primary-subtle text-primary badge-grade rounded-pill px-3"
-                                  th:text="'Grade ' + ${student.grade}">Grade 10</span>
+            <span class="badge bg-primary-subtle text-primary badge-grade rounded-pill px-3" th:text="'Grade ' + ${student.schoolClass.grade}">Grade 10</span>
           </td>
           <td th:text="${student.gender}">Gender</td>
           <td class="text-muted" th:text="${student.birthDay}">2008-01-01</td>
@@ -67,23 +66,8 @@
   </div>
 </div>
 
-<script>
-  // Quick frontend search filter
-  function filterStudents() {
-    let input = document.getElementById('studentSearch').value.toLowerCase();
-    let rows = document.querySelectorAll('.student-row');
-
-    rows.forEach(row => {
-      let name = row.cells[0].innerText.toLowerCase();
-      row.style.display = name.includes(input) ? '' : 'none';
-    });
-  }
-
-  function deleteStudent(id) {
-    if(confirm('Are you sure you want to remove this student?')) {
-      // Your fetch delete logic here
-    }
-  }
-</script>
+<th:block th:fragment="scripts">
+  <script th:inline="javascript" th:src="@{/scripts/students-list.js}"></script>
+</th:block>
 </body>
 </html>

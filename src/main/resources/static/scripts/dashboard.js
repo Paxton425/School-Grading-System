@@ -61,7 +61,7 @@ new Chart(document.getElementById('barChart'), {
         datasets: [{
             data: [78,85,72,80],
             backgroundColor: '#3b82f6',
-            borderRadius: 6``
+            borderRadius: 6
         }]
     },
     options: {

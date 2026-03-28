@@ -6,24 +6,23 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-public class SubjectEnrollment {
+public class SubjectGrades {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "student_id")
-    @JsonIgnoreProperties("enrollments")
+    @JsonIgnoreProperties("subjectGrades")
     private Student student;
     @ManyToOne
     @JoinColumn(name = "subject_id")
-    @JsonIgnoreProperties("enrollments")
+    @JsonIgnoreProperties("subjectGrades")
     private Subject subject;
     @ManyToOne
-    @JoinColumn(name = "teacher_id")
-    @JsonIgnoreProperties("enrollments")
-    private Teacher teacher;
-    @OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("enrollment")
+    @JsonIgnoreProperties("subjectGrades")
+    private Instructor instructor;
+    @OneToMany(mappedBy = "subjectGrades", cascade = CascadeType.ALL)  // "subjectGrade" not "subject_grades"
+    @JsonIgnoreProperties("subjectGrades")
     private List<Result> grades;
 
     public Long getId() {
@@ -46,12 +45,12 @@ public class SubjectEnrollment {
         return subject;
     }
 
-    public Teacher getTeacher() {
-        return teacher;
+    public Instructor getInstructor() {
+        return instructor;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
 
     public List<Result> getGrades() {

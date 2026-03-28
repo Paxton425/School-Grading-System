@@ -25,7 +25,9 @@ public class Subject {
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("subject")
-    private List<SubjectEnrollment> enrollments;
+    private List<SubjectGrades> enrollments;
+    @ManyToOne
+    private SubjectsStream subjectsStream;
 
     public Long getId() {
         return id;
@@ -91,12 +93,20 @@ public class Subject {
         this.examWeight = examWeight;
     }
 
-    public List<SubjectEnrollment> getEnrollments() {
+    public List<SubjectGrades> getEnrollments() {
         return enrollments;
     }
 
-    public void setEnrollments(List<SubjectEnrollment> enrollments) {
+    public void setEnrollments(List<SubjectGrades> enrollments) {
         this.enrollments = enrollments;
+    }
+
+    public SubjectsStream getSubjectsStream() {
+        return subjectsStream;
+    }
+
+    public void setSubjectsStream(SubjectsStream subjectsStream) {
+        this.subjectsStream = subjectsStream;
     }
 }
 

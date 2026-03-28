@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-public class Teacher {
+public class Instructor {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -22,10 +22,16 @@ public class Teacher {
     private Gender gender;
     private String email;
     private String phone;
-
-    @OneToMany(mappedBy = "teacher")
-    @JsonIgnoreProperties("teacher")
-    List<SubjectEnrollment> enrollments;
+    @ManyToMany
+    @JoinTable(
+            name = "InstructorClass",
+            joinColumns = @JoinColumn(name = "instructor_id"),
+    inverseJoinColumns = @JoinColumn(name = "school_class_id"))
+    @JsonIgnoreProperties("instructors")
+    List<SchoolClass> schoolClasses;
+    @OneToMany(mappedBy = "instructor")
+    @JsonIgnoreProperties("instructor")
+    List<SubjectGrades> subjectGrades;
 
     public enum Role { TEACHER, HOD, ADMIN}
 
@@ -99,11 +105,19 @@ public class Teacher {
         this.phone = phone;
     }
 
-    public List<SubjectEnrollment> getEnrollments() {
-        return enrollments;
+    public List<SchoolClass> getSchoolClasses() {
+        return schoolClasses;
     }
 
-    public void setEnrollments(List<SubjectEnrollment> enrollments) {
-        this.enrollments = enrollments;
+    public void setSchoolClasses(List<SchoolClass> schoolClasses) {
+        this.schoolClasses = schoolClasses;
+    }
+
+    public List<SubjectGrades> getSubjectGrades() {
+        return subjectGrades;
+    }
+
+    public void setSubjectGrades(List<SubjectGrades> subjectGrades) {
+        this.subjectGrades = subjectGrades;
     }
 }

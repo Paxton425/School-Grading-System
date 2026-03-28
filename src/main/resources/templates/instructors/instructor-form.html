@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::main}, ~{::link}, ~{::scripts})}">
+<head>
+    <title>Add Instructor | Nexus Grade</title>
+</head>
+<body>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex align-items-center mb-4">
+                <a th:href="@{/instructors}" class="btn btn-link text-decoration-none p-0 me-3">
+                    <i class="bi bi-arrow-left fs-4"></i>
+                </a>
+                <h2 class="fw-bold mb-0">Add New Instructor</h2>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+                <form th:action="@{/instructors/save}" th:object="${instructor}" method="post">
+
+                    <h5 class="text-primary mb-4 border-bottom pb-2">Personal Information</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">First Name</label>
+                            <input type="text" th:field="*{firstName}" class="form-control shadow-none" placeholder="Enter first name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Last Name</label>
+                            <input type="text" th:field="*{lastName}" class="form-control shadow-none" placeholder="Enter last name" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Gender</label>
+                            <select th:field="*{gender}" class="form-select shadow-none">
+                                <option th:each="g : ${genders}" th:value="${g}" th:text="${#strings.capitalize(#strings.toLowerCase(g))}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">Email Address</label>
+                            <input type="email" th:field="*{email}" class="form-control shadow-none" placeholder="instructor@nexusgrade.com">
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary mb-4 border-bottom pb-2">Employment Details</h5>
+                    <div class="row g-3 mb-5">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Employee ID</label>
+                            <input type="text" th:field="*{employeeId}" class="form-control shadow-none" placeholder="EMP-12345">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Department</label>
+                            <select th:field="*{department}" class="form-select shadow-none">
+                                <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">System Role</label>
+                            <select th:field="*{role}" class="form-select shadow-none">
+                                <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Phone Number</label>
+                            <input type="tel" th:field="*{phone}" class="form-control shadow-none" placeholder="+27 00 000 0000">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a th:href="@{/instructors}" class="btn btn-light px-4 border">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold">Register Instructor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:fragment="scripts">
+</th:block>
+
+</body>
+</html>

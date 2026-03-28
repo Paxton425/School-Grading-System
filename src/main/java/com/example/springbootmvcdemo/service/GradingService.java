@@ -2,39 +2,39 @@ package com.example.springbootmvcdemo.service;
 
 import com.example.springbootmvcdemo.model.Assessment;
 import com.example.springbootmvcdemo.model.Result.Term;
-import com.example.springbootmvcdemo.model.SubjectEnrollment;
+import com.example.springbootmvcdemo.model.SubjectGrades;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GradingService {
-    public double calculateMaxGrade(SubjectEnrollment en){
-        double max = en.getGrades().stream()
+    public double calculateMaxGrade(SubjectGrades grades){
+        double max = grades.getGrades().stream()
                 .filter(a -> a.getAssessment().getType() == Assessment.AssessmentType.SBA)
                 .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .max().orElse(0.0);
         return max;
     }
-    public double calculateMinGrade(SubjectEnrollment en){
-        double min = en.getGrades().stream()
+    public double calculateMinGrade(SubjectGrades sgrades){
+        double min = sgrades.getGrades().stream()
                 .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA)
                 .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .min().orElse(0.0);
         return min;
     }
-    public double calculateGradeAverage(SubjectEnrollment en, Term term){
-        double average = en.getGrades().stream()
+    public double calculateGradeAverage(SubjectGrades sgrades, Term term){
+        double average = sgrades.getGrades().stream()
                 .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.SBA && g.getTerm() == term)
                 .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .average().orElse(0.0);
         return  average;
     }
-    public double calculateFinalMark(SubjectEnrollment en, Term term) {
-        double sba = en.getGrades().stream()
+    public double calculateFinalMark(SubjectGrades sgrades, Term term) {
+        double sba = sgrades.getGrades().stream()
                 .filter(g -> g.getAssessment().getType().equals(Assessment.AssessmentType.SBA) && g.getTerm().equals(term))
                 .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .average().orElse(0.0);
 
-        double exam = en.getGrades().stream()
+        double exam = sgrades.getGrades().stream()
                 .filter(g -> g.getAssessment().getType() == Assessment.AssessmentType.EXAM && g.getTerm() == term)
                 .mapToDouble(s -> computeMark(s.getScore(),s.getAssessment().getMaxPoints()))
                 .findFirst().orElse(0.0);

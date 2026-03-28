@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::main}, ~{::link}, ~{::scripts})}">
+<head>
+    <title>Staff Directory | Grading System</title>
+</head>
+<body class="bg-light">
+
+<main>
+    <div class="container py-4" style="max-width: 1200px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-0 fw-bold">Academic Staff</h2>
+                <p class="text-muted">Manage educators and subject allocations</p>
+            </div>
+            <a th:href="@{/instructors/create}" class="btn btn-dark px-4 shadow-sm">+ Add Member</a>
+        </div>
+
+        <div class="card shadow-sm border-0 p-4">
+            <div class="table-responsive">
+                <table id="staffTable" class="table table-hover align-middle mb-0" style="width:100%">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="ps-3" style="width: 30%;">Educator</th>
+                        <th style="width: 15%;">Role</th>
+                        <th style="width: 20%;">Department</th>
+                        <th style="width: 20%;">Load</th>
+                        <th class="text-end pe-3" style="width: 15%;">Manage</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="instructor : ${instructors}">
+                        <td class="ps-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                                     style="width: 40px; height: 40px; min-width: 40px; font-weight: bold;"
+                                     th:text="${#strings.substring(instructor.firstName,0,1) + #strings.substring(instructor.lastName,0,1)}">
+                                    JS
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark mb-0" th:text="${instructor.firstName + ' ' + instructor.lastName}">John Smith</div>
+                                    <small class="text-muted" th:text="${instructor.email}">email@school.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border" th:text="${instructor.role}">Teacher</span>
+                        </td>
+                        <td>
+                            <span class="text-secondary" th:text="${instructor.department}">Science</span>
+                        </td>
+                        <td>
+                            <div class="progress" style="height: 6px; width: 100px;">
+                                <div class="progress-bar bg-success" style="width: 80%"></div>
+                            </div>
+                            <small class="text-muted">80%</small>
+                        </td>
+                        <td class="text-end pe-3">
+                            <div class="btn-group">
+                                <a th:href="@{/instructors/edit/{id}(id=${instructor.id})}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:fragment="scripts">
+    <script src="https://cdn.datatables.net/2.3.7/js/dataTables.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            if ($.fn.DataTable) {
+                $('#staffTable').DataTable({
+                    "pageLength": 10,
+                    "ordering": true,
+                    "searching": true,
+                    "responsive": true,
+                    "dom": '<"d-flex justify-content-between align-items-center mb-3"f>t<"d-flex justify-content-between align-items-center mt-3"ip>',
+                    "language": {
+                        "search": "",
+                        "searchPlaceholder": "Search staff members..."
+                    }
+                });
+
+                // Style the search box to look like a modern Bootstrap input
+                $('.dataTables_filter input').addClass('form-control shadow-sm').css('width', '300px');
+            }
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

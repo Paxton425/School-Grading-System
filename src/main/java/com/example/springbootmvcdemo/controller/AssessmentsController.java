@@ -4,9 +4,9 @@ import com.example.springbootmvcdemo.dto.SubmissionStats;
 import com.example.springbootmvcdemo.model.Assessment;
 import com.example.springbootmvcdemo.model.Result;
 import com.example.springbootmvcdemo.model.Subject;
-import com.example.springbootmvcdemo.model.SubjectEnrollment;
+import com.example.springbootmvcdemo.model.SubjectGrades;
 import com.example.springbootmvcdemo.repository.AssessmentRepository;
-import com.example.springbootmvcdemo.repository.EnrollmentRepository;
+import com.example.springbootmvcdemo.repository.GradesRepository;
 import com.example.springbootmvcdemo.repository.ResultRepository;
 import com.example.springbootmvcdemo.repository.SubjectRepository;
 import com.example.springbootmvcdemo.service.AssessmentService;
@@ -29,15 +29,15 @@ public class AssessmentsController {
 
     private AssessmentRepository assessmentRepository;
     private SubjectRepository subjectRepository;
-    private EnrollmentRepository enrollmentRepository;
+    private GradesRepository gradesRepository;
     private ResultRepository resultRepository;
     AssessmentsController(AssessmentRepository assessmentRepository,
                           SubjectRepository subjectRepository,
-                          EnrollmentRepository enrollmentRepository,
+                          GradesRepository gradesRepository,
                           ResultRepository resultRepository){
         this.assessmentRepository = assessmentRepository;
         this.subjectRepository = subjectRepository;
-        this.enrollmentRepository = enrollmentRepository;
+        this.gradesRepository = gradesRepository;
         this.resultRepository = resultRepository;
     }
 
@@ -91,7 +91,7 @@ public class AssessmentsController {
                 .orElseThrow(() -> new EntityNotFoundException("Assessment not found"));
 
         List<Result> submissions = resultRepository.findByAssessment(assessment);
-        long totalEnrolled = enrollmentRepository.countBySubject(assessment.getSubject());
+        long totalEnrolled = gradesRepository.countBySubject(assessment.getSubject());
 
         SubmissionStats stats = new SubmissionStats(
                 totalEnrolled,
@@ -128,7 +128,7 @@ public class AssessmentsController {
                 .orElseThrow(() -> new EntityNotFoundException("Assessment not found"));
 
         // We only want students enrolled in the subject this assessment belongs to
-        List<SubjectEnrollment> enrollments = enrollmentRepository.findBySubject(assessment.getSubject());
+        List<SubjectGrades> enrollments = gradesRepository.findBySubject(assessment.getSubject());
 
         Result result = new Result();
         result.setAssessment(assessment); // Pre-link the assessment

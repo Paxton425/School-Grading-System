@@ -41,11 +41,11 @@
 
                         <div class="mb-3">
                             <label class="form-label">Grade</label>
-                            <select th:field="*{grade}" class="form-select">
-                                <option value="" th:text="|Choose a grade|"></option>
-                                <option th:each="n : ${#numbers.sequence(0, 12)}"
-                                        th:value="${n}"
-                                        th:text="|Grade ${n}|">
+                            <select th:field="*{schoolClass}" class="form-select">
+                                <option value="" th:text="|Choose class|"></option>
+                                <option th:each="c : ${classes}"
+                                        th:value="${c}"
+                                        th:text="|Class ${c}|">
                                 </option>
                             </select>
                         </div>
@@ -123,7 +123,7 @@
                                 </thead>
                                 <tbody id="draftSubjectBody">
                                 <tr id="emptyRow"
-                                        th:if="${#lists.isEmpty(student.enrollments)}">
+                                        th:if="${#lists.isEmpty(student.subjectGrades)}">
                                     <td
                                             colspan="4"
                                             class="text-center py-3 text-muted">
@@ -131,15 +131,15 @@
                                     </td>
                                 </tr>
 
-                                <tr th:each="enrollment : ${student.enrollments}">
-                                    <td style="display: none;" th:text="${enrollment.subject.getId()}"></td>
-                                    <td th:text="${enrollment.subject.name}">
+                                <tr th:each="grades : ${student.subjectGrades}">
+                                    <td style="display: none;" th:text="${grades.subject.getId()}"></td>
+                                    <td th:text="${grades.subject.name}">
                                         Mathematics
                                     </td>
-                                    <td th:text="${enrollment.subject.grade}">
+                                    <td th:text="${grades.subject.grade}">
                                         FET
                                     </td>
-                                    <td th:text="${enrollment.subject.department}">
+                                    <td th:text="${grades.subject.department}">
                                         MATHEMATICS
                                     </td>
                                     <td class="text-end">
@@ -334,7 +334,7 @@
                 id: studentId ? studentId : null, // Include the ID for updates!
                 firstName: $('#firstName').val().trim(),
                 lastName: $('#lastName').val().trim(),
-                grade: $('#grade').val().trim(),
+                class: $('#class').val().trim(),
                 gender: $('#gender').val().trim(),
                 birthDay: $('#birthDay').val().trim(),
                 enrollmentSubjects: Array.isArray(enrolledSubjects) ? enrolledSubjects : []

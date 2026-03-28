@@ -15,23 +15,13 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">Personal Details</div>
-        <div class="card-body">
-          <p><strong>Gender:</strong> <span th:text="${student.gender}"></span></p>
-          <p><strong>Grade:</strong> <span th:text="${student.grade}"></span></p>
-          <p><strong>Birth Date:</strong> <span th:text="${student.birthDay}"></span></p>
-        </div>
-      </div>
-    </div>
+
 
     <div class="col-md-8">
       <div class="card shadow-sm">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
           Enrolled Subjects
-          <span class="badge bg-info" th:text="${student.enrollments.size() + ' Subjects'}">0</span>
+          <span class="badge bg-info" th:text="${student.subjectGrades.size() + ' Subjects'}">0</span>
         </div>
         <div class="card-body p-0">
           <table class="table table-hover mb-0">
@@ -44,18 +34,18 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="enrollment : ${student.enrollments}">
-              <td th:text="${enrollment.subject.subjectCode}">MATH10</td>
-              <td th:text="${enrollment.subject.name}">Mathematics</td>
-              <td th:text="${enrollment.teacher != null ? enrollment.teacher.firstName + ' ' + enrollment.teacher.lastName : 'Not Assigned'}">Teacher</td>
+            <tr th:each="sg : ${student.subjectGrades}">
+              <td th:text="${sg.subject.subjectCode}">MATH10</td>
+              <td th:text="${sg.subject.name}">Mathematics</td>
+              <td th:text="${sg.getInstructor() != null ? sg.instructor.firstName + ' ' + sg.instructor.lastName : 'Not Assigned'}">Teacher</td>
               <td>
                                         <span class="fw-bold text-success"
-                                              th:if="${not #lists.isEmpty(enrollment.grades)}"
-                                              th:text="${enrollment.grades[0].score + '%'}"></span>
+                                              th:if="${not #lists.isEmpty(sg.getGrades())}"
+                                              th:text="${sg.grades[0].score + '%'}"></span>
                 <span class="text-muted" th:unless="${not #lists.isEmpty(enrollment.grades)}">No results</span>
               </td>
             </tr>
-            <tr th:if="${#lists.isEmpty(student.enrollments)}">
+            <tr th:if="${#lists.isEmpty(student.subjectGrades)}">
               <td colspan="4" class="text-center py-4 text-muted">No subjects enrolled yet.</td>
             </tr>
             </tbody>

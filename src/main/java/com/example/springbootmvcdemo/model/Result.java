@@ -18,7 +18,7 @@ public class Result {
     private Term term;
     @ManyToOne
     @JoinColumn(name = "enrollment_id")
-    private SubjectEnrollment enrollment; // Links to the student-subject pair
+    private SubjectGrades subjectGrades;
 
     public enum Term {
         TERM_1, TERM_2, TERM_3, TERM_4
@@ -44,12 +44,12 @@ public class Result {
         this.assessment = assessment;
     }
 
-    public SubjectEnrollment getEnrollment() {
-        return enrollment;
+    public SubjectGrades getSubjectGrades() {
+        return subjectGrades;
     }
 
-    public void setEnrollment(SubjectEnrollment enrollment) {
-        this.enrollment = enrollment;
+    public void setSubjectGrades(SubjectGrades subjectGrades) {
+        this.subjectGrades = subjectGrades;
     }
 
     public Term getTerm() {

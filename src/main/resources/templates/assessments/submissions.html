@@ -70,15 +70,15 @@
                     <td class="ps-4">
                         <div class="d-flex align-items-center gap-2">
                             <div class="avatar-sm bg-primary-soft text-primary rounded-circle p-2 text-center" style="width:35px">
-                                <span th:text="${#strings.substring(res.enrollment.student.firstName, 0, 1)}">T</span>
+                                <span th:text="${#strings.substring(res.subjectGrades.student.firstName, 0, 1)}">T</span>
                             </div>
                             <div>
-                                <div class="fw-bold" th:text="${res.enrollment.student.firstName + ' ' + res.enrollment.student.lastName}">Thabo Mokoena</div>
-                                <small class="text-muted" th:text="${res.enrollment.student.gender}">MALE</small>
+                                <div class="fw-bold" th:text="${res.subjectGrades.student.firstName + ' ' + res.subjectGrades.student.lastName}">Thabo Mokoena</div>
+                                <small class="text-muted" th:text="${res.subjectGrades.student.gender}">MALE</small>
                             </div>
                         </div>
                     </td>
-                    <td><span class="badge bg-light text-dark border" th:text="'Grade ' + ${res.enrollment.student.grade}">Grade 10</span></td>
+                    <td><span class="badge bg-light text-dark border" th:text="'Grade ' + ${res.subjectGrades.getStudent().schoolClass.getGrade()}">Grade 10</span></td>
                     <td th:text="${res.term}">TERM_1</td>
                     <td>
                         <span class="fw-bold" th:text="${res.score}">42</span>

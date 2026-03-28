@@ -2,7 +2,6 @@ package com.example.springbootmvcdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -15,13 +14,15 @@ public class Student {
     private UUID id;
     private String firstName;
     private String lastName;
-    private Integer grade;
     @Enumerated(EnumType.STRING)
     private Gender gender;
     private LocalDate birthDay;
+    @ManyToOne
+    @JsonIgnoreProperties("student")
+    private SchoolClass schoolClass;
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("student")
-    private List<SubjectEnrollment> enrollments;
+    private List<SubjectGrades> subjectGrades;
 
     public enum Gender { MALE, FEMALE };
 
@@ -45,14 +46,6 @@ public class Student {
         this.lastName = lastName;
     }
 
-    public Integer getGrade() {
-        return grade;
-    }
-
-    public void setGrade(Integer grade) {
-        this.grade = grade;
-    }
-
     public Gender getGender() {
         return gender;
     }
@@ -69,11 +62,19 @@ public class Student {
         this.birthDay = birthDay;
     }
 
-    public List<SubjectEnrollment> getEnrollments() {
-        return enrollments;
+    public SchoolClass getSchoolClass() {
+        return schoolClass;
     }
 
-    public void setEnrollments(List<SubjectEnrollment> enrollments) {
-        this.enrollments = enrollments;
+    public void setSchoolClass(SchoolClass schoolClass) {
+        this.schoolClass = schoolClass;
+    }
+
+    public List<SubjectGrades> getSubjectGrades() {
+        return subjectGrades;
+    }
+
+    public void setSubjectGrades(List<SubjectGrades> subjectGrades) {
+        this.subjectGrades = subjectGrades;
     }
 }

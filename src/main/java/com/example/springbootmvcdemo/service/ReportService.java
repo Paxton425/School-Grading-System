@@ -30,13 +30,13 @@ public class ReportService {
         TreeMap<String, TreeMap<Term, TermResult>> results = new TreeMap<>();
         HashMap<Term, Double> totalsPerTerm = new HashMap<>();
         HashMap<Term, Double> averagePerTerm = new HashMap<>();
-        int subjectCount = student.getEnrollments().size();
+        int subjectCount = student.getSubjectGrades().size();
 
-        for (SubjectEnrollment enrollment : student.getEnrollments()) {
+        for (SubjectGrades grades : student.getSubjectGrades()) {
             TreeMap<Term, TermResult> termResults = new TreeMap<>();
             for (Term term : Term.values()) {
-                double finalMark = gradingService.calculateFinalMark(enrollment, term);
-                double averageMark = gradingService.calculateGradeAverage(enrollment, term);
+                double finalMark = gradingService.calculateFinalMark(grades, term);
+                double averageMark = gradingService.calculateGradeAverage(grades, term);
                 Integer level = gradingService.calculateLevel(finalMark);
 
                 termResults.put(term, new TermResult(finalMark, averageMark, level));
@@ -50,7 +50,7 @@ public class ReportService {
                 overallTotal += finalMark;
                 marksCount++;
             }
-            results.put(enrollment.getSubject().getName(), termResults);
+            results.put(grades.getSubject().getName(), termResults);
         }
 
         // NOW calculate averages after all totals are complete

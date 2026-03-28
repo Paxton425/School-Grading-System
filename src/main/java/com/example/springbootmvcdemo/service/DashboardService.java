@@ -1,7 +1,7 @@
 package com.example.springbootmvcdemo.service;
 
 import com.example.springbootmvcdemo.repository.StudentRepository;
-import com.example.springbootmvcdemo.repository.TeacherRepository;
+import com.example.springbootmvcdemo.repository.InstructorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +11,9 @@ public class DashboardService {
     GradingService gradingService;
 
     StudentRepository studentRepository;
-    TeacherRepository teacherRepository;
-    DashboardService(StudentRepository studentRepository, TeacherRepository teacherRepository){
+    InstructorRepository instructorRepository;
+    DashboardService(StudentRepository studentRepository, InstructorRepository instructorRepository){
         this.studentRepository = studentRepository;
-        this.teacherRepository = teacherRepository;
+        this.instructorRepository = instructorRepository;
     }
 }

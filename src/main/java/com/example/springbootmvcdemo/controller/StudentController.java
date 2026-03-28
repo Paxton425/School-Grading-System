@@ -2,10 +2,12 @@ package com.example.springbootmvcdemo.controller;
 
 import com.example.springbootmvcdemo.dto.*;
 import com.example.springbootmvcdemo.dto.StudentDTO;
-import com.example.springbootmvcdemo.model.SubjectEnrollment;
+import com.example.springbootmvcdemo.model.SchoolClass;
 import com.example.springbootmvcdemo.model.Student;
 import com.example.springbootmvcdemo.model.Subject;
-import com.example.springbootmvcdemo.repository.EnrollmentRepository;
+import com.example.springbootmvcdemo.model.SubjectGrades;
+import com.example.springbootmvcdemo.repository.ClassRepository;
+import com.example.springbootmvcdemo.repository.GradesRepository;
 import com.example.springbootmvcdemo.repository.StudentRepository;
 import com.example.springbootmvcdemo.repository.SubjectRepository;
 import com.example.springbootmvcdemo.service.ReportService;
@@ -14,16 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -34,15 +37,18 @@ public class StudentController implements CommandLineRunner {
     Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     private StudentRepository studentRepository;
-    private EnrollmentRepository enrollmentRepository;
+    private GradesRepository gradesRepository;
     private SubjectRepository subjectRepository;
+    private ClassRepository classRepository;
 
     StudentController(StudentRepository studentRepository,
                       SubjectRepository subjectRepository,
-                      EnrollmentRepository enrollmentRepository){
+                      GradesRepository gradesRepository,
+                      ClassRepository classRepository){
         this.studentRepository = studentRepository;
-        this.enrollmentRepository = enrollmentRepository;
+        this.gradesRepository = gradesRepository;
         this.subjectRepository = subjectRepository;
+        this.classRepository = classRepository;
     }
 
     @GetMapping
@@ -50,6 +56,47 @@ public class StudentController implements CommandLineRunner {
         List<Student> students = studentRepository.findAll();
         model.addAttribute("students", students);
         return "students/students-list";
+    }
+
+    @GetMapping("/data")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getStudentsJson(
+            @RequestParam(defaultValue = "1") int draw,
+            @RequestParam(defaultValue = "0") int start,
+            @RequestParam(defaultValue = "10") int length,
+            @RequestParam(value = "search[value]", required = false) String searchValue) {
+
+        // 1. Create Pageable (DataTables 'start' is index, not page number)
+        Pageable pageable = PageRequest.of(start / length, length, Sort.by("lastName").ascending());
+
+        // 2. Fetch Filtered Data
+        Page<Student> page;
+        if (searchValue != null && !searchValue.isEmpty()) {
+            page = studentRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(searchValue, searchValue, pageable);
+        } else {
+            page = studentRepository.findAll(pageable);
+        }
+
+        // 3. Convert Entities to DTOs (The "Shield")
+        List<StudentDTO> studentDTOS = page.getContent().stream()
+                .map(s -> new StudentDTO(
+                        s.getId(),
+                        s.getFirstName(),
+                        s.getLastName(),
+                        s.getGender(),
+                        s.getBirthDay(),
+                        s.getSchoolClass()
+                ))
+                .toList();
+
+        // 3. Return DataTables specific JSON structure
+        Map<String, Object> response = new HashMap<>();
+        response.put("draw", draw);
+        response.put("recordsTotal", studentRepository.count());
+        response.put("recordsFiltered", page.getTotalElements());
+        response.put("data", studentDTOS);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/student/{uuid}")
@@ -77,7 +124,8 @@ public class StudentController implements CommandLineRunner {
                             s.getFirstName(),
                             s.getLastName(),
                             s.getGender(),
-                            s.getGrade()
+                            s.getBirthDay(),
+                            s.getSchoolClass()
                     ))
                     .toList();
 
@@ -114,8 +162,8 @@ public class StudentController implements CommandLineRunner {
     public String CreateStudentForm(Model model) {
         List<Subject> subjects = subjectRepository.findAll( );
         model.addAttribute("student", new Student());
-        // Gender.values() allows us to loop through MALE/FEMALE in the dropdown
         model.addAttribute("genders", Student.Gender.values());
+        model.addAttribute("classes", classRepository.findAll());
         model.addAttribute("allSubjects", subjects);
         return "students/student-form";
     }
@@ -127,6 +175,7 @@ public class StudentController implements CommandLineRunner {
 
         model.addAttribute("student", student); // This student has an ID and data
         model.addAttribute("genders", Student.Gender.values());
+        model.addAttribute("classes", classRepository.findAll());
         model.addAttribute("allSubjects", subjectRepository.findAll());
 
         return "students/student-form"; // Use the SAME file
@@ -135,27 +184,32 @@ public class StudentController implements CommandLineRunner {
     @PostMapping("/create/save")
     public ResponseEntity<?> saveStudent(@RequestBody StudentDTO studentDTO) {
         try {
+            Long classId = studentDTO.getSchoolClassDTO().getId();
             Student student = new Student();
-            student.setFirstName(studentDTO.firstName);
-            student.setLastName(studentDTO.lastName);
-            student.setGrade(studentDTO.grade);
-            student.setGender(studentDTO.gender);
-            student.setBirthDay(studentDTO.birthDay);
+            student.setFirstName(studentDTO.getFirstName());
+            student.setLastName(studentDTO.getLastName());
+            student.setGender(studentDTO.getGender());
+            student.setBirthDay(studentDTO.getBirthDay());
+            if(classId != null){ //Assigning class during registration is optional
+                SchoolClass schoolClass = classRepository.findById(classId)
+                        .orElseThrow(() -> new RuntimeException("Class with ID: "+classId+"Not found"));
+                student.setSchoolClass(schoolClass);
+            }
             Student savedStudent = studentRepository.save(student);
 
-            if(studentDTO.enrollmentSubjects.isEmpty()){
-                return ResponseEntity.ok("Student with "+studentDTO.enrollmentSubjects.size()+" enrollments Saved Successfully!");
+            if(studentDTO.getSubjects().isEmpty()){
+                return ResponseEntity.ok("Student with "+studentDTO.getSubjects().size()+" enrollments Saved Successfully!");
             }
             for (SubjectDTO enrollmentSubject:
-                    studentDTO.enrollmentSubjects)
+                    studentDTO.getSubjects())
             {
                 logger.info("Subject: " + enrollmentSubject.name);
                 Subject subject = subjectRepository.findById(enrollmentSubject.Id)
                         .orElseThrow(() -> new EntityNotFoundException("Subject ID " + enrollmentSubject.Id + " not found"));
-                SubjectEnrollment enrollment = new SubjectEnrollment();
-                enrollment.setStudent(savedStudent);
-                enrollment.setSubject(subject);
-                enrollmentRepository.save(enrollment);
+                SubjectGrades subjectGrades = new SubjectGrades();
+                subjectGrades.setStudent(savedStudent);
+                subjectGrades.setSubject(subject);
+                gradesRepository.save(subjectGrades);
             }
 
             return ResponseEntity.ok("Student and Subject Enrollment(s) Saved Successfully!");
@@ -177,34 +231,39 @@ public class StudentController implements CommandLineRunner {
         try {
             Student studentToUpdate = studentRepository.findById(uuid)
                     .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+            Long classId = studentUpdates.getSchoolClassDTO().getId();
 
             // 1. Update Basic Info
-            studentToUpdate.setFirstName(studentUpdates.firstName);
-            studentToUpdate.setLastName(studentUpdates.lastName);
-            studentToUpdate.setGrade(studentUpdates.grade);
-            studentToUpdate.setGender(studentUpdates.gender);
-            studentToUpdate.setBirthDay(studentUpdates.birthDay);
+            studentToUpdate.setFirstName(studentUpdates.getFirstName());
+            studentToUpdate.setLastName(studentUpdates.getLastName());
+            if(classId != null){ //Assigning class during registration is optional
+                SchoolClass schoolClass = classRepository.findById(classId)
+                        .orElseThrow(() -> new RuntimeException("Class with ID: "+classId+"Not found"));
+                studentToUpdate.setSchoolClass(schoolClass);
+            }
+            studentToUpdate.setGender(studentUpdates.getGender());
+            studentToUpdate.setBirthDay(studentUpdates.getBirthDay());
 
             Student updatedStudent = studentRepository.save(studentToUpdate);
 
             // 2. Handle Enrollments (The Sync)
-            if (studentUpdates.enrollmentSubjects != null) {
+            if (studentUpdates.getSubjects() != null) {
                 // Get current IDs to avoid duplicates
-                Set<Long> currentSubjectIds = updatedStudent.getEnrollments().stream()
+                Set<Long> currentSubjectIds = updatedStudent.getSubjectGrades().stream()
                         .map(e -> e.getSubject().getId())
                         .collect(Collectors.toSet());
 
                 // FILTER & EXECUTE
-                studentUpdates.enrollmentSubjects.stream()
+                studentUpdates.getSubjects().stream()
                         .filter(dto -> !currentSubjectIds.contains(dto.Id)) // Only new ones
                         .forEach(dto -> {
                             Subject newSubject = subjectRepository.findById(dto.Id)
                                     .orElseThrow(() -> new EntityNotFoundException("Subject ID " + dto.Id + " not found"));
 
-                            SubjectEnrollment enrollment = new SubjectEnrollment();
-                            enrollment.setStudent(updatedStudent);
-                            enrollment.setSubject(newSubject);
-                            enrollmentRepository.save(enrollment);
+                            SubjectGrades subjectGrades = new SubjectGrades();
+                            subjectGrades.setStudent(updatedStudent);
+                            subjectGrades.setSubject(newSubject);
+                            gradesRepository.save(subjectGrades);
                         });
             }
 

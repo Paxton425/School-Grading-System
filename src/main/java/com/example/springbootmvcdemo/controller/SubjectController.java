@@ -1,7 +1,7 @@
 package com.example.springbootmvcdemo.controller;
 
-import com.example.springbootmvcdemo.model.SubjectEnrollment;
-import com.example.springbootmvcdemo.repository.EnrollmentRepository;
+import com.example.springbootmvcdemo.model.SubjectGrades;
+import com.example.springbootmvcdemo.repository.GradesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/subjects")
 public class SubjectController {
 
-    private EnrollmentRepository enrollmentRepository;
+    private GradesRepository gradesRepository;
 
-    SubjectController(EnrollmentRepository enrollmentRepository){
-        this.enrollmentRepository = enrollmentRepository;
+    SubjectController(GradesRepository gradesRepository){
+        this.gradesRepository = gradesRepository;
     }
 
 
@@ -25,16 +25,16 @@ public class SubjectController {
         return "index";
     }
 
-    @GetMapping("/subject/grades/{enrollmentId}")
-    public String viewSubjectEnrollmentGrades(@PathVariable Long enrollmentId, Model model) {
-        // Find the specific enrollment that links this student to this subject
-        SubjectEnrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new EntityNotFoundException("Enrollment record not found for this subject."));
+    @GetMapping("/subject/grades/{id}")
+    public String viewSubjectEnrollmentGrades(@PathVariable Long id, Model model) {
+        // Find the specific record that links this student to this subject
+        SubjectGrades grades = gradesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Subject grades record not found for this subject."));
 
-        model.addAttribute("enrollment", enrollment);
-        model.addAttribute("student", enrollment.getStudent());
-        model.addAttribute("subject", enrollment.getSubject());
-        model.addAttribute("results", enrollment.getGrades()); // The list of Result entities
+        model.addAttribute("grades", grades);
+        model.addAttribute("student", grades.getStudent());
+        model.addAttribute("subject", grades.getSubject());
+        model.addAttribute("results", grades.getGrades()); // The list of Result entities
 
         return "subjects/subject-grades";
     }
