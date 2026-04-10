@@ -32,42 +32,42 @@
     <section class="kpis">
         <div class="kpi">
             <span>Total Students</span>
-            <h2 th:text="${totalStudents}">120</h2>
+            <h2 id="studentsCount" th:text="${totalStudents}">120</h2>
             <small class="up">↑ 5% from last term</small>
         </div>
         <div class="kpi">
             <span>Average Score</span>
-            <h2 th:text="${averageGrade}">76%</h2>
+            <h2 id="averageGrade" th:text="${averageGrade}">76%</h2>
             <small class="down">↓ 2% vs Target</small>
         </div>
         <div class="kpi">
             <span>Pass Rate</span>
-            <h2 th:text="${passRate}">89%</h2>
+            <h2 id="passRate" th:text="${passRate}">89%</h2>
             <small class="up">↑ 3% overall</small>
         </div>
         <div class="kpi">
             <span>At Risk</span>
-            <h2 class="text-danger">14</h2>
+            <h2 id="atRisk" class="text-danger">14</h2>
             <small class="warn">Action Required</small>
         </div>
     </section>
 
     <section class="grid">
-        <div class="card large">
+        <div class="card">
             <h3>Performance Trend</h3>
-            <div style="flex-grow: 1; position: relative;">
+            <div class="chart-container">
                 <canvas id="trendChart"></canvas>
             </div>
         </div>
         <div class="card">
             <h3>Grade Distribution</h3>
-            <div style="flex-grow: 1; position: relative;">
+            <div class="chart-container">
                 <canvas id="gradeChart"></canvas>
             </div>
         </div>
         <div class="card">
             <h3>Subject Performance Overview</h3>
-            <div style="flex-grow: 1; position: relative;">
+            <div class="chart-container">
                 <canvas id="barChart"></canvas>
             </div>
         </div>

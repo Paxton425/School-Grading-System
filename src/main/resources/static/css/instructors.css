@@ -1,7 +1,8 @@
+/*Form View*/
 /* Layout Fragment Style */
 .form-card {
     border-top: 5px solid #0d6efd !important; /* Your Green Range */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .icon-box {

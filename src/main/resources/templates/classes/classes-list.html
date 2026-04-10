@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::main}, ~{::link}, ~{::scripts})}">
+<head>
+    <th:block th:fragment="link">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            /* Customizing DataTables to look like Tailwind */
+            .dataTables_wrapper .dataTables_length select,
+            .dataTables_wrapper .dataTables_filter input {
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                padding: 0.4rem;
+                outline: none;
+            }
+            table.dataTable.no-footer { border-bottom: 1px solid #e5e7eb; }
+        </style>
+    </th:block>
+</head>
+<body>
+
+<main class="container mx-auto my-10 p-5">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Academic Classes</h1>
+        <a th:href="@{/classes/create}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-semibold transition shadow-md">
+            <i class="bi bi-plus-circle"></i> New Class
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center space-x-4">
+            <label class="text-sm font-semibold text-gray-600">Filter by Grade:</label>
+            <select id="gradeFilter" class="border border-gray-300 rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">All Grades</option>
+                <option value="8">Grade 8</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <table id="classesTable" class="display w-full text-sm text-left">
+            <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-bold">
+            <tr>
+                <th class="px-6 py-4">Title</th>
+                <th class="px-6 py-4">Grade</th>
+                <th class="px-6 py-4">Year</th>
+                <th class="px-6 py-4">Students</th>
+                <th class="px-6 py-4 text-right">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<th:block th:fragment="scripts">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var table = $('#classesTable').DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    url: '/classes/data',
+                    type: 'GET',
+                    data: function (d) {
+                        // This adds the extra parameter to the request sent to Spring
+                        d.gradeFilter = $('#gradeFilter').val();
+                    }
+                },
+                columns: [
+                    { data: 'title', className: 'font-semibold text-gray-800' },
+                    {
+                        data: 'grade',
+                        render: function(data) {
+                            return `<span class="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-bold">Grade ${data}</span>`;
+                        }
+                    },
+                    { data: 'classYear' },
+                    { data: 'studentCount', className: 'text-center' },
+                    {
+                        data: 'id',
+                        orderable: false,
+                        className: 'text-right',
+                        render: function(data) {
+                            return `
+                        <div class="flex justify-end space-x-3">
+                            <a href="/classes/view/${data}" class="text-blue-600 hover:text-blue-800 font-bold text-sm">View</a>
+                        </div>
+                    `;
+                        }
+                    }
+                ]
+            });
+
+            // Redraw the table whenever the dropdown changes
+            $('#gradeFilter').on('change', function() {
+                table.draw();
+            });
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

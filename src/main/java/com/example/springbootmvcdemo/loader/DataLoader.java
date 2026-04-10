@@ -9,55 +9,20 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class DataLoader implements CommandLineRunner {
     @Autowired private StudentRepository studentRepo;
     @Autowired private SubjectRepository subjectRepo;
-    @Autowired private GradesRepository gradesRepository;
     @Autowired private AssessmentRepository assessmentRepo;
     @Autowired private ResultRepository achievementRepo;
     @Autowired private InstructorRepository teacherRepo;
     @Autowired private ClassRepository classRepository;
 
     public void insertSampleData() {
-        //0.Create Classes
-        SchoolClass classA = new SchoolClass();
-        classA.setTitle("A");
-        classA.setGrade(10);
-        classA.setClassYear(2026);
-        classA = classRepository.save(classA);
 
-        SchoolClass classB = new SchoolClass();
-        classB.setTitle("B");
-        classB.setGrade(10);
-        classB.setClassYear(2026);
-        classB = classRepository.save(classB);
-
-        SchoolClass classC = new SchoolClass();
-        classC.setTitle("C");
-        classC.setGrade(10);
-        classC.setClassYear(2026);
-        classC = classRepository.save(classC);
-
-        // 1. Create the Student
-        Student student = new Student();
-        student.setFirstName("Thabo");
-        student.setLastName("Mokoena");
-        student.setGender(Student.Gender.MALE);
-        student.setBirthDay(LocalDate.of(2009, Month.AUGUST, 12));
-        student.setSchoolClass(classA);
-        student = studentRepo.save(student);
-
-        Student student2 = new Student();
-        student2.setFirstName("Lebogang");
-        student2.setLastName("Moroko");
-        student2.setGender(Student.Gender.FEMALE);
-        student2.setBirthDay(LocalDate.of(2009, Month.JUNE, 22));
-        student2.setSchoolClass(classB);
-        student2 = studentRepo.save(student2);
-
-        // 2. Create a Subject
+        // Create a Subjects
         Subject subject = new Subject();
         subject.setSubjectCode("CAT");
         subject.setName("Computer Applications Technology");
@@ -76,32 +41,67 @@ public class DataLoader implements CommandLineRunner {
         subject2.setExamWeight(0.75);
         subject2 = subjectRepo.save(subject2);
 
+        //Create Classes
+        SchoolClass classA = new SchoolClass();
+        classA.setTitle("A");
+        classA.setGrade(10);
+        classA.setClassYear(2026);
+        classA.setSubjects(Arrays.asList(subject, subject2));
+        classA = classRepository.save(classA);
+
+        SchoolClass classB = new SchoolClass();
+        classB.setTitle("B");
+        classB.setGrade(10);
+        classB.setClassYear(2026);
+        classB = classRepository.save(classB);
+
+        SchoolClass classC = new SchoolClass();
+        classC.setTitle("C");
+        classC.setGrade(10);
+        classC.setClassYear(2026);
+        classC = classRepository.save(classC);
+
+        // Create the Student
+        Student student = new Student();
+        student.setFirstName("Thabo");
+        student.setLastName("Mokoena");
+        student.setStatus(Student.Status.ACTIVE);
+        student.setGender(Student.Gender.MALE);
+        student.setBirthDay(LocalDate.of(2009, Month.AUGUST, 12));
+        student.setSchoolClass(classA);
+        student = studentRepo.save(student);
+
+        Student student2 = new Student();
+        student2.setFirstName("Lebogang");
+        student2.setLastName("Moroko");
+        student2.setStatus(Student.Status.INACTIVE);
+        student2.setGender(Student.Gender.FEMALE);
+        student2.setBirthDay(LocalDate.of(2009, Month.JUNE, 22));
+        student2.setSchoolClass(classB);
+        student2 = studentRepo.save(student2);
+
+        Student student3 = new Student();
+        student3.setFirstName("Maxwell");
+        student3.setLastName("Mchunu");
+        student3.setStatus(Student.Status.COMPLETED);
+        student3.setGender(Student.Gender.MALE);
+        student3.setBirthDay(LocalDate.of(2004, Month.DECEMBER, 22));
+        student3.setSchoolClass(classB);
+        student3 = studentRepo.save(student3);
+
         Instructor instructor = new Instructor();
         instructor.setFirstName("Sthandiwe");
         instructor.setLastName("Zwane");
         instructor.setEmployeeId("EM-001");
         instructor.setDepartment(Department.SERVICES_AND_TECH);
         instructor.setRole(Instructor.Role.HOD);
+        instructor.setSchoolClasses(List.of(classA, classB));
         instructor.setGender(Instructor.Gender.FEMALE);
         instructor.setPhone("08976543");
         instructor.setEmail("sthandiwe@gmail.com");
         instructor = teacherRepo.save(instructor);
 
-
-        // 3. Create the Enrollment (Links Thabo to IT)
-        SubjectGrades subjectGrades = new SubjectGrades();
-        subjectGrades.setStudent(student);
-        subjectGrades.setSubject(subject);
-        subjectGrades.setInstructor(instructor);
-        subjectGrades = gradesRepository.save(subjectGrades);
-
-        SubjectGrades subjectGrades2 = new SubjectGrades();
-        subjectGrades2.setStudent(student2);
-        subjectGrades2.setSubject(subject2);
-        subjectGrades.setInstructor(instructor);
-        subjectGrades = gradesRepository.save(subjectGrades2);
-
-        // 1. A Project (SBA) - Issued early, due mid-term
+        // A Project (SBA) - Issued early, due mid-term
         Assessment term1Project = new Assessment();
         term1Project.setTitle("Term 1 Programming Project");
         term1Project.setDescription("Comprehensive software development task focusing on CRUD operations, data validation, and GUI design basics.");
@@ -110,9 +110,10 @@ public class DataLoader implements CommandLineRunner {
         term1Project.setType(Assessment.AssessmentType.SBA);
         term1Project.setMaxPoints(50);
         term1Project.setSubject(subject);
+        term1Project.setSchoolClasses(List.of(classA,classB, classC));
         assessmentRepo.save(term1Project);
 
-        // 2. A Standard Test (SBA) - Short window
+        // A Standard Test (SBA) - Short window
         Assessment term1Test = new Assessment();
         term1Test.setTitle("Term 1 Programming Test");
         term1Test.setDescription("Theoretical and practical assessment covering Object-Oriented Programming concepts, loops, and array manipulation.");
@@ -121,9 +122,10 @@ public class DataLoader implements CommandLineRunner {
         term1Test.setType(Assessment.AssessmentType.SBA);
         term1Test.setMaxPoints(100);
         term1Test.setSubject(subject);
+        term1Test.setSchoolClasses(List.of(classA,classB, classC));
         assessmentRepo.save(term1Test);
 
-        // 3. A PAT (Practical Assessment Task) - Long duration
+        // A PAT (Practical Assessment Task) - Long duration
         Assessment itPat = new Assessment();
         itPat.setTitle("Coding Practicals 1");
         itPat.setDescription("Phase 1 of the Practical Assessment Task: Requirement analysis, database normalization, and initial architectural wireframing.");
@@ -132,9 +134,10 @@ public class DataLoader implements CommandLineRunner {
         itPat.setType(Assessment.AssessmentType.PAT);
         itPat.setMaxPoints(60);
         itPat.setSubject(subject);
+        itPat.setSchoolClasses(List.of(classA,classB, classC));
         assessmentRepo.save(itPat);
 
-        // 4. Final Exam - The big one
+        // Final Exam - The big one
         Assessment exam = new Assessment();
         exam.setTitle("Coding Exam");
         exam.setDescription("Summative year-end examination covering the full curriculum: Advanced data structures, recursion, and complex problem-solving.");
@@ -145,30 +148,30 @@ public class DataLoader implements CommandLineRunner {
         exam.setSubject(subject);
         assessmentRepo.save(exam);
 
-        // 5. Insert the actual Achievement (The Student's Marks)
+        // Insert the actual Achievement (The Student's Marks)
         Result projectGrade = new Result();
-        projectGrade.setSubjectGrades(subjectGrades);
+        projectGrade.setStudent(student);
         projectGrade.setAssessment(term1Project);
         projectGrade.setTerm(Result.Term.TERM_1);
         projectGrade.setScore(42); // 42/50
         achievementRepo.save(projectGrade);
 
         Result testGrade = new Result();
-        testGrade.setSubjectGrades(subjectGrades);
+        testGrade.setStudent(student);
         testGrade.setAssessment(term1Test);
         testGrade.setTerm(Result.Term.TERM_1);
         testGrade.setScore(78); // 78/100
         achievementRepo.save(testGrade);
 
         Result patGrade = new Result();
-        patGrade.setSubjectGrades(subjectGrades);
+        patGrade.setStudent(student);
         patGrade.setTerm(Result.Term.TERM_1);
         patGrade.setAssessment(itPat);
         patGrade.setScore(85); // 85/100
         achievementRepo.save(patGrade);
 
         Result examGrade = new Result();
-        examGrade.setSubjectGrades(subjectGrades);
+        examGrade.setStudent(student);
         examGrade.setTerm(Result.Term.TERM_1);
         examGrade.setAssessment(exam);
         examGrade.setScore(98); // 98/120

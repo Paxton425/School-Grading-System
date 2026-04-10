@@ -14,20 +14,17 @@ public class Subject {
     private String subjectCode; // e.g., MATH10, PHYS12
     @Column(nullable = false)
     private String name; // e.g., Mathematics
+    @Column(nullable = false)
     private Department department;
+    @Column(nullable = false)
     private Integer grade;
     private Double sbaWeight;  // e.g., 0.25 (25%)
     private Double examWeight; // e.g., 0.75 (75%)
-
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("subject")
     private List<Assessment> assessments;
-
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("subject")
-    private List<SubjectGrades> enrollments;
-    @ManyToOne
-    private SubjectsStream subjectsStream;
+    @ManyToMany(mappedBy = "subjects")
+    List<SchoolClass> schoolClasses;
 
     public Long getId() {
         return id;
@@ -93,20 +90,12 @@ public class Subject {
         this.examWeight = examWeight;
     }
 
-    public List<SubjectGrades> getEnrollments() {
-        return enrollments;
+    public List<SchoolClass> getSchoolClasses() {
+        return schoolClasses;
     }
 
-    public void setEnrollments(List<SubjectGrades> enrollments) {
-        this.enrollments = enrollments;
-    }
-
-    public SubjectsStream getSubjectsStream() {
-        return subjectsStream;
-    }
-
-    public void setSubjectsStream(SubjectsStream subjectsStream) {
-        this.subjectsStream = subjectsStream;
+    public void setSchoolClasses(List<SchoolClass> schoolClasses) {
+        this.schoolClasses = schoolClasses;
     }
 }
 

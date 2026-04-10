@@ -4,8 +4,8 @@ import com.example.springbootmvcdemo.model.*;
 
 import java.util.List;
 
-public class SubjectGradesDTO {
-    public SubjectGradesDTO(Long id, StudentDTO student, SubjectDTO subject, Instructor instructor, List<ResultDTO> grades){}
+public class GradesDTO {
+    public GradesDTO(Long id, StudentDTO student, SubjectDTO subject, Instructor instructor, List<ResultDTO> grades){}
     public Long id;
     public StudentDTO student;
     public SubjectDTO subject;
@@ -16,7 +16,6 @@ public class SubjectGradesDTO {
         Long Id;
         private Double score;
         private Assessment assessment;
-        private SubjectGrades subjectGrades;
 
     }
 }

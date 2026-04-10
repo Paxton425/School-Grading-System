@@ -26,19 +26,20 @@ public class Instructor {
     @JoinTable(
             name = "InstructorClass",
             joinColumns = @JoinColumn(name = "instructor_id"),
-    inverseJoinColumns = @JoinColumn(name = "school_class_id"))
+            inverseJoinColumns = @JoinColumn(name = "school_class_id"))
     @JsonIgnoreProperties("instructors")
     List<SchoolClass> schoolClasses;
-    @OneToMany(mappedBy = "instructor")
-    @JsonIgnoreProperties("instructor")
-    List<SubjectGrades> subjectGrades;
 
-    public enum Role { TEACHER, HOD, ADMIN}
+    public enum Role {TEACHER, HOD, ADMIN}
 
-    public enum Gender { MALE, FEMALE };
+    public enum Gender {MALE, FEMALE}
 
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -111,13 +112,5 @@ public class Instructor {
 
     public void setSchoolClasses(List<SchoolClass> schoolClasses) {
         this.schoolClasses = schoolClasses;
-    }
-
-    public List<SubjectGrades> getSubjectGrades() {
-        return subjectGrades;
-    }
-
-    public void setSubjectGrades(List<SubjectGrades> subjectGrades) {
-        this.subjectGrades = subjectGrades;
     }
 }

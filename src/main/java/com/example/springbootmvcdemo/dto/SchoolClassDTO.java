@@ -3,7 +3,6 @@ package com.example.springbootmvcdemo.dto;
 import com.example.springbootmvcdemo.model.Instructor;
 import com.example.springbootmvcdemo.model.SchoolClass;
 import com.example.springbootmvcdemo.model.Student;
-import com.example.springbootmvcdemo.model.SubjectsStream;
 
 import java.util.List;
 
@@ -12,26 +11,14 @@ public class SchoolClassDTO {
     private String title;
     private Integer grade;
     private Integer classYear;
-    private SubjectsStream subjectsStream;
     private List<Instructor> instructors;
     private List<Student> students;
-
-    public SchoolClassDTO(Long id, String title, Integer grade, Integer classYear, SubjectsStream subjectsStream, List<Instructor> instructors, List<Student> students) {
-        this.id = id;
-        this.title = title;
-        this.grade = grade;
-        this.classYear = classYear;
-        this.subjectsStream = subjectsStream;
-        this.instructors = instructors;
-        this.students = students;
-    }
 
     public SchoolClassDTO(SchoolClass schoolClass) {
         this.id = schoolClass.getId();
         this.title = schoolClass.getTitle();
         this.grade = schoolClass.getGrade();
         this.classYear = schoolClass.getClassYear();
-        this.subjectsStream = schoolClass.getSubjectsStream();
         //this.instructors = schoolClass.getInstructors();
         //this.instructors = schoolClass.getInstructors();
         //this.students = schoolClass.getStudents();
@@ -67,14 +54,6 @@ public class SchoolClassDTO {
 
     public void setClassYear(Integer classYear) {
         this.classYear = classYear;
-    }
-
-    public SubjectsStream getSubjectsStream() {
-        return subjectsStream;
-    }
-
-    public void setSubjectsStream(SubjectsStream subjectsStream) {
-        this.subjectsStream = subjectsStream;
     }
 
     public List<Instructor> getInstructors() {

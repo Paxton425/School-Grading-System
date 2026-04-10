@@ -2,21 +2,29 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::main}, ~{::link}, ~{::scripts})}">
 <head>
     <title>Add Instructor | Nexus Grade</title>
+    <link rel="stylesheet" th:href="@{/css/instructors.css}">
 </head>
 <body>
 
 <main class="container py-5">
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamatation-triangle-fill me-2"></i>
+        <span th:text="${error}">Error message here</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="d-flex align-items-center mb-4">
                 <a th:href="@{/instructors}" class="btn btn-link text-decoration-none p-0 me-3">
                     <i class="bi bi-arrow-left fs-4"></i>
                 </a>
-                <h2 class="fw-bold mb-0">Add New Instructor</h2>
+                <h2 class="fw-bold mb-0" th:text="${instructor.getId() == null? 'Add New Instructor' : 'Update Instructor'}">Add New Instructor</h2>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+            <div class="card form-card border-0 rounded-4 p-4 p-md-5">
                 <form th:action="@{/instructors/save}" th:object="${instructor}" method="post">
+                    <input type="hidden" th:field="*{id}" />
 
                     <h5 class="text-primary mb-4 border-bottom pb-2">Personal Information</h5>
                     <div class="row g-3 mb-4">
@@ -66,7 +74,11 @@
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <a th:href="@{/instructors}" class="btn btn-light px-4 border">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-5 fw-bold">Register Instructor</button>
+                        <button
+                                type="submit"
+                                class="btn btn-primary px-5 fw-bold"
+                                th:text="${instructor.id == null? 'Register Instructor': 'Save Updates'}"
+                        >Register Instructor</button>
                     </div>
                 </form>
             </div>

@@ -24,9 +24,9 @@ public class StudentGradeSummaryDTO {
         this.lastName = student.getLastName();
         this.grade = student.getSchoolClass().getGrade();
 
-        var enrollmentsFinalScores = student.getSubjectGrades().stream()
-                .mapToDouble(e -> new GradingService().calculateFinalMark(e, Result.Term.TERM_1))
-                .toArray();
+        var enrollmentsFinalScores = new double[]{0, 0}; //student.getResults().stream()
+                //.mapToDouble(e -> new GradingService().calculateFinalMark(e, Result.Term.TERM_1))
+                //.toArray();
 
         if (enrollmentsFinalScores.length > 0) {
             this.average = DoubleStream.of(enrollmentsFinalScores).average().orElse(0.0);

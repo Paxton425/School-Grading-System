@@ -2,6 +2,8 @@ package com.example.springbootmvcdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -14,20 +16,31 @@ public class Student {
     private UUID id;
     private String firstName;
     private String lastName;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
+    @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDay;
     @ManyToOne
     @JsonIgnoreProperties("student")
     private SchoolClass schoolClass;
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("student")
-    private List<SubjectGrades> subjectGrades;
+    private List<Result> results;
 
+    public enum Status {INACTIVE, ACTIVE, COMPLETED}
     public enum Gender { MALE, FEMALE };
 
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -44,6 +57,14 @@ public class Student {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Gender getGender() {
@@ -70,11 +91,7 @@ public class Student {
         this.schoolClass = schoolClass;
     }
 
-    public List<SubjectGrades> getSubjectGrades() {
-        return subjectGrades;
-    }
-
-    public void setSubjectGrades(List<SubjectGrades> subjectGrades) {
-        this.subjectGrades = subjectGrades;
+    public List<Result> getResults() {
+        return results;
     }
 }

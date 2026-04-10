@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::main}, ~{::link}, ~{::scripts})}">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:fragment="link">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </th:block>
+</head>
+<body>
+
+<main class="container mx-auto my-10 p-5 text-gray-800">
+
+    <div class="flex justify-between items-start mb-8">
+        <div>
+            <nav class="flex text-sm text-gray-500 mb-2">
+                <a th:href="@{/classes}" class="hover:text-blue-600">Classes</a>
+                <span class="mx-2">/</span>
+                <span class="text-gray-900 font-medium">Class Details</span>
+            </nav>
+            <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                <span th:text="${schoolClass.title}">10-A Computer Science</span>
+                <span class="ml-3 px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full" th:text="${'Grade ' + schoolClass.grade}">Grade 10</span>
+            </h1>
+            <p class="text-gray-500 mt-1" th:text="${'Academic Year: ' + schoolClass.classYear}">Academic Year: 2026</p>
+        </div>
+        <div class="flex space-x-3">
+            <a th:href="@{/classes/edit/{id}(id=${schoolClass.id})}"
+               class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg transition shadow-sm">
+                <i class="fas fa-edit mr-2 text-blue-600"></i>Modify Class
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center">
+            <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 mr-4">
+                <i class="fas fa-user-graduate text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium uppercase tracking-wider">Total Students</p>
+                <h3 class="text-2xl font-bold text-gray-900" th:text="${#lists.size(schoolClass.students)}">24</h3>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center">
+            <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-green-600 mr-4">
+                <i class="fas fa-book text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium uppercase tracking-wider">Subjects in Stream</p>
+                <h3 class="text-2xl font-bold text-gray-900" th:text="${#lists.size(schoolClass.subjects)}">7</h3>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center">
+            <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mr-4">
+                <i class="fas fa-chalkboard-teacher text-xl"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium uppercase tracking-wider">Teaching Staff</p>
+                <h3 class="text-2xl font-bold text-gray-900" th:text="${#lists.size(schoolClass.instructors)}">5</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 space-y-8">
+
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                    <h3 class="font-bold text-gray-900">Subject Stream</h3>
+                </div>
+                <div class="p-6">
+                    <div class="flex flex-wrap gap-2">
+                        <span th:each="subject : ${schoolClass.subjects}"
+                              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium border border-gray-200"
+                              th:text="${subject.name}">
+                            Mathematics
+                        </span>
+                        <div th:if="${#lists.isEmpty(schoolClass.subjects)}" class="text-gray-400 italic text-sm">
+                            No subjects assigned to this class stream.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                    <h3 class="font-bold text-gray-900">Allocated Instructors</h3>
+                </div>
+                <div class="divide-y divide-gray-100">
+                    <div th:each="teacher : ${schoolClass.instructors}" class="p-4 hover:bg-gray-50 transition flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mr-4">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900" th:text="${teacher.firstName + ' ' + teacher.lastName}">Dr. Smith</h4>
+                                <p class="text-xs text-gray-500" th:text="${teacher.department != null ? teacher.department.name : 'General'}">Science Dept</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <a th:href="@{/instructors/view/{id}(id=${teacher.id})}" class="text-blue-600 hover:text-blue-800 text-sm font-bold">
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(schoolClass.instructors)}" class="p-10 text-center text-gray-400 italic">
+                        No instructors assigned to this class.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden sticky top-10">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-900">Student Roster</h3>
+                    <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded" th:text="${#lists.size(schoolClass.students)}">0</span>
+                </div>
+                <div class="max-h-[500px] overflow-y-auto">
+                    <table class="min-w-full">
+                        <tbody class="divide-y divide-gray-100">
+                        <tr th:each="student : ${schoolClass.students}" class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-3">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-gray-800" th:text="${student.lastName + ', ' + student.firstName}">Doe, Jane</span>
+                                    <span class="text-[10px] text-gray-400 font-mono uppercase" th:text="${student.status}">ACTIVE</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <a th:href="@{/students/student/{uuid}(uuid=${student.id})}" class="text-gray-400 hover:text-blue-600 transition">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(schoolClass.students)}">
+                            <td class="px-6 py-10 text-center text-gray-400 italic text-sm">
+                                No students enrolled in this class.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-100">
+                    <a th:href="@{/students/create}" class="block text-center text-sm font-bold text-blue-600 hover:text-blue-700">
+                        + Enroll New Student
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<th:block th:fragment="scripts">
+</th:block>
+
+</body>
+</html>

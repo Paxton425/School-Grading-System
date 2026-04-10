@@ -5,9 +5,7 @@ import com.example.springbootmvcdemo.dto.StudentDTO;
 import com.example.springbootmvcdemo.model.SchoolClass;
 import com.example.springbootmvcdemo.model.Student;
 import com.example.springbootmvcdemo.model.Subject;
-import com.example.springbootmvcdemo.model.SubjectGrades;
 import com.example.springbootmvcdemo.repository.ClassRepository;
-import com.example.springbootmvcdemo.repository.GradesRepository;
 import com.example.springbootmvcdemo.repository.StudentRepository;
 import com.example.springbootmvcdemo.repository.SubjectRepository;
 import com.example.springbootmvcdemo.service.ReportService;
@@ -25,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,16 +36,13 @@ public class StudentController implements CommandLineRunner {
     Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     private StudentRepository studentRepository;
-    private GradesRepository gradesRepository;
     private SubjectRepository subjectRepository;
     private ClassRepository classRepository;
 
     StudentController(StudentRepository studentRepository,
                       SubjectRepository subjectRepository,
-                      GradesRepository gradesRepository,
                       ClassRepository classRepository){
         this.studentRepository = studentRepository;
-        this.gradesRepository = gradesRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
     }
@@ -79,14 +75,7 @@ public class StudentController implements CommandLineRunner {
 
         // 3. Convert Entities to DTOs (The "Shield")
         List<StudentDTO> studentDTOS = page.getContent().stream()
-                .map(s -> new StudentDTO(
-                        s.getId(),
-                        s.getFirstName(),
-                        s.getLastName(),
-                        s.getGender(),
-                        s.getBirthDay(),
-                        s.getSchoolClass()
-                ))
+                .map(s -> new StudentDTO(s))
                 .toList();
 
         // 3. Return DataTables specific JSON structure
@@ -105,7 +94,7 @@ public class StudentController implements CommandLineRunner {
                 .orElseThrow(() -> new EntityNotFoundException("Subject ID " + uuid + " not found"));
 
         model.addAttribute(student);
-        return "students/student";
+        return "students/student-profile";
     }
 
     @GetMapping(path = "/search")
@@ -119,14 +108,7 @@ public class StudentController implements CommandLineRunner {
                         String last = s.getLastName() != null ? s.getLastName().toLowerCase() : "";
                         return first.contains(searchLower) || last.contains(searchLower);
                     })
-                    .map(s -> new StudentDTO(
-                            s.getId(),
-                            s.getFirstName(),
-                            s.getLastName(),
-                            s.getGender(),
-                            s.getBirthDay(),
-                            s.getSchoolClass()
-                    ))
+                    .map(s -> new StudentDTO(s))
                     .toList();
 
             return ResponseEntity.ok(matches);
@@ -151,20 +133,27 @@ public class StudentController implements CommandLineRunner {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        // Generate report
-        StudentReportDTO report = reportService.generateReport(student);
-        model.addAttribute("report", report);
+        try{
+            // Generate report
+            StudentReportDTO report = reportService.generateReport(student);
+            model.addAttribute("report", report);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
 
         return "students/report";
     }
 
     @GetMapping("/create")
     public String CreateStudentForm(Model model) {
-        List<Subject> subjects = subjectRepository.findAll( );
+        List<Subject> subjects = subjectRepository.findAll();
+        Map<Integer, List<SchoolClass>> classes = classRepository.findAll().stream()
+                .collect(Collectors.groupingBy(SchoolClass::getGrade));
         model.addAttribute("student", new Student());
         model.addAttribute("genders", Student.Gender.values());
-        model.addAttribute("classes", classRepository.findAll());
-        model.addAttribute("allSubjects", subjects);
+        model.addAttribute("classes", classes);
+        model.addAttribute("statuses", Student.Status.values());
         return "students/student-form";
     }
 
@@ -173,106 +162,29 @@ public class StudentController implements CommandLineRunner {
         Student student = studentRepository.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
+        Map<Integer, List<SchoolClass>> classes = classRepository.findAll().stream()
+                .collect(Collectors.groupingBy(SchoolClass::getGrade));
+
         model.addAttribute("student", student); // This student has an ID and data
         model.addAttribute("genders", Student.Gender.values());
-        model.addAttribute("classes", classRepository.findAll());
-        model.addAttribute("allSubjects", subjectRepository.findAll());
+        model.addAttribute("classes", classes);
+        model.addAttribute("statuses", Student.Status.values());
 
         return "students/student-form"; // Use the SAME file
     }
 
-    @PostMapping("/create/save")
-    public ResponseEntity<?> saveStudent(@RequestBody StudentDTO studentDTO) {
+    @PostMapping("/save")
+    public String saveStudent(@ModelAttribute("student") Student student, RedirectAttributes ra) {
         try {
-            Long classId = studentDTO.getSchoolClassDTO().getId();
-            Student student = new Student();
-            student.setFirstName(studentDTO.getFirstName());
-            student.setLastName(studentDTO.getLastName());
-            student.setGender(studentDTO.getGender());
-            student.setBirthDay(studentDTO.getBirthDay());
-            if(classId != null){ //Assigning class during registration is optional
-                SchoolClass schoolClass = classRepository.findById(classId)
-                        .orElseThrow(() -> new RuntimeException("Class with ID: "+classId+"Not found"));
-                student.setSchoolClass(schoolClass);
-            }
-            Student savedStudent = studentRepository.save(student);
-
-            if(studentDTO.getSubjects().isEmpty()){
-                return ResponseEntity.ok("Student with "+studentDTO.getSubjects().size()+" enrollments Saved Successfully!");
-            }
-            for (SubjectDTO enrollmentSubject:
-                    studentDTO.getSubjects())
-            {
-                logger.info("Subject: " + enrollmentSubject.name);
-                Subject subject = subjectRepository.findById(enrollmentSubject.Id)
-                        .orElseThrow(() -> new EntityNotFoundException("Subject ID " + enrollmentSubject.Id + " not found"));
-                SubjectGrades subjectGrades = new SubjectGrades();
-                subjectGrades.setStudent(savedStudent);
-                subjectGrades.setSubject(subject);
-                gradesRepository.save(subjectGrades);
-            }
-
-            return ResponseEntity.ok("Student and Subject Enrollment(s) Saved Successfully!");
-        }
-        catch (EntityNotFoundException e){
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.resolve(400))
-                    .body(e.getMessage());
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.resolve(500))
-                    .body("Something went wrong " + e.getMessage());
-        }
-    }
-
-    @PutMapping("/edit/save/{uuid}")
-    public ResponseEntity<?> updateStudent(@RequestBody StudentDTO studentUpdates, @PathVariable UUID uuid) {
-        try {
-            Student studentToUpdate = studentRepository.findById(uuid)
-                    .orElseThrow(() -> new EntityNotFoundException("Student not found"));
-            Long classId = studentUpdates.getSchoolClassDTO().getId();
-
-            // 1. Update Basic Info
-            studentToUpdate.setFirstName(studentUpdates.getFirstName());
-            studentToUpdate.setLastName(studentUpdates.getLastName());
-            if(classId != null){ //Assigning class during registration is optional
-                SchoolClass schoolClass = classRepository.findById(classId)
-                        .orElseThrow(() -> new RuntimeException("Class with ID: "+classId+"Not found"));
-                studentToUpdate.setSchoolClass(schoolClass);
-            }
-            studentToUpdate.setGender(studentUpdates.getGender());
-            studentToUpdate.setBirthDay(studentUpdates.getBirthDay());
-
-            Student updatedStudent = studentRepository.save(studentToUpdate);
-
-            // 2. Handle Enrollments (The Sync)
-            if (studentUpdates.getSubjects() != null) {
-                // Get current IDs to avoid duplicates
-                Set<Long> currentSubjectIds = updatedStudent.getSubjectGrades().stream()
-                        .map(e -> e.getSubject().getId())
-                        .collect(Collectors.toSet());
-
-                // FILTER & EXECUTE
-                studentUpdates.getSubjects().stream()
-                        .filter(dto -> !currentSubjectIds.contains(dto.Id)) // Only new ones
-                        .forEach(dto -> {
-                            Subject newSubject = subjectRepository.findById(dto.Id)
-                                    .orElseThrow(() -> new EntityNotFoundException("Subject ID " + dto.Id + " not found"));
-
-                            SubjectGrades subjectGrades = new SubjectGrades();
-                            subjectGrades.setStudent(updatedStudent);
-                            subjectGrades.setSubject(newSubject);
-                            gradesRepository.save(subjectGrades);
-                        });
-            }
-
-            return ResponseEntity.ok("Student Profile and New Enrollments Updated Successfully");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            boolean isEdit = (student.getId() != null);
+            studentRepository.save(student);
+            String msg = isEdit ? "updated" : "enrolled";
+            ra.addFlashAttribute("success", "Student " + student.getFirstName() + " " + msg + " successfully!");
+            return "redirect:/students";
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Update failed: " + e.getMessage());
+            logger.error("Save failed", e);
+            ra.addFlashAttribute("error", "Save failed: " + e.getMessage());
+            return student.getId() == null ? "redirect:/students/create" : "redirect:/students/edit/" + student.getId();
         }
     }
 

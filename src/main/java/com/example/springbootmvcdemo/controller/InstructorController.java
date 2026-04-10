@@ -3,15 +3,21 @@ package com.example.springbootmvcdemo.controller;
 import com.example.springbootmvcdemo.model.Department;
 import com.example.springbootmvcdemo.model.Instructor;
 import com.example.springbootmvcdemo.repository.InstructorRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping(path = "/instructors")
 public class InstructorController {
+    Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     InstructorRepository instructorRepository;
     InstructorController(InstructorRepository instructorRepository){
@@ -19,10 +25,18 @@ public class InstructorController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public  String getAllTeachers(Model model){
+    public  String getAllInstructors(Model model){
         List<Instructor> instructors = instructorRepository.findAll();
         model.addAttribute("instructors", instructors);
         return "instructors/instructors-list";
+    }
+
+    @GetMapping("/view/{id}")
+    public  String getInstructor(@PathVariable UUID id, Model model){
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Instructor not found"));
+        model.addAttribute("instructor", instructor);
+        return "instructors/instructor-view";
     }
 
     @GetMapping("/create")
@@ -33,11 +47,31 @@ public class InstructorController {
         model.addAttribute("genders", Instructor.Gender.values());
         return "instructors/instructor-form";
     }
+    @GetMapping("/edit/{id}")
+    public String showCreateForm(@PathVariable UUID id, Model model) {
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Instructor not found"));
+
+        model.addAttribute("instructor", instructor);
+        model.addAttribute("departments", Department.values());
+        model.addAttribute("roles", Instructor.Role.values());
+        model.addAttribute("genders", Instructor.Gender.values());
+        return "instructors/instructor-form";
+    }
 
     @PostMapping("/save")
-    public String saveInstructor(@ModelAttribute Instructor instructor) {
-        instructorRepository.save(instructor);
-        return "redirect:/instructors";
+    public String saveInstructor(@ModelAttribute Instructor instructor, RedirectAttributes ra) {
+        try {
+            boolean isEdit = (instructor.getId() != null);
+            instructorRepository.save(instructor);
+            String msg = isEdit ? "updated" : "Registered";
+            ra.addFlashAttribute("success", "Instructor " + instructor.getFirstName() + " " + msg + " successfully!");
+            return "redirect:/instructors";
+        } catch (Exception e) {
+            logger.error("Save failed", e);
+            ra.addFlashAttribute("error", "Save failed: " + e.getMessage());
+            return instructor.getId() == null ? "redirect:/instructors/create" : "redirect:/instructors/edit/" + instructor.getId();
+        }
     }
 
 }

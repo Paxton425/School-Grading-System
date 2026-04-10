@@ -2,7 +2,10 @@ package com.example.springbootmvcdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -16,9 +19,14 @@ public class Result {
     private Assessment assessment;
     @Enumerated(EnumType.STRING)
     private Term term;
+    @Column(updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
     @ManyToOne
-    @JoinColumn(name = "enrollment_id")
-    private SubjectGrades subjectGrades;
+    @JoinColumn(name = "student_id")
+    private Student student;
 
     public enum Term {
         TERM_1, TERM_2, TERM_3, TERM_4
@@ -44,16 +52,24 @@ public class Result {
         this.assessment = assessment;
     }
 
-    public SubjectGrades getSubjectGrades() {
-        return subjectGrades;
+    public Student getStudent() {
+        return student;
     }
 
-    public void setSubjectGrades(SubjectGrades subjectGrades) {
-        this.subjectGrades = subjectGrades;
+    public void setStudent(Student student) {
+        this.student = student;
     }
 
     public Term getTerm() {
         return term;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setTerm(Term term) {

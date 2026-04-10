@@ -1,13 +1,10 @@
 package com.example.springbootmvcdemo.controller;
 
 import com.example.springbootmvcdemo.dto.SubmissionStats;
-import com.example.springbootmvcdemo.model.Assessment;
-import com.example.springbootmvcdemo.model.Result;
-import com.example.springbootmvcdemo.model.Subject;
-import com.example.springbootmvcdemo.model.SubjectGrades;
+import com.example.springbootmvcdemo.model.*;
 import com.example.springbootmvcdemo.repository.AssessmentRepository;
-import com.example.springbootmvcdemo.repository.GradesRepository;
 import com.example.springbootmvcdemo.repository.ResultRepository;
+import com.example.springbootmvcdemo.repository.StudentRepository;
 import com.example.springbootmvcdemo.repository.SubjectRepository;
 import com.example.springbootmvcdemo.service.AssessmentService;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,8 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -29,16 +25,16 @@ public class AssessmentsController {
 
     private AssessmentRepository assessmentRepository;
     private SubjectRepository subjectRepository;
-    private GradesRepository gradesRepository;
     private ResultRepository resultRepository;
+    private StudentRepository studentRepository;
     AssessmentsController(AssessmentRepository assessmentRepository,
                           SubjectRepository subjectRepository,
-                          GradesRepository gradesRepository,
-                          ResultRepository resultRepository){
+                          ResultRepository resultRepository,
+                          StudentRepository studentRepository){
         this.assessmentRepository = assessmentRepository;
         this.subjectRepository = subjectRepository;
-        this.gradesRepository = gradesRepository;
         this.resultRepository = resultRepository;
+        this.subjectRepository = subjectRepository;
     }
 
     @RequestMapping(path = "", method = RequestMethod.GET)
@@ -91,7 +87,10 @@ public class AssessmentsController {
                 .orElseThrow(() -> new EntityNotFoundException("Assessment not found"));
 
         List<Result> submissions = resultRepository.findByAssessment(assessment);
-        long totalEnrolled = gradesRepository.countBySubject(assessment.getSubject());
+        List<SchoolClass> assignedClasses = assessment.getSchoolClasses();
+        long totalEnrolled = 0;
+        for(SchoolClass sClass: assignedClasses)
+            totalEnrolled =+ sClass.getStudents().size();
 
         SubmissionStats stats = new SubmissionStats(
                 totalEnrolled,
@@ -127,14 +126,18 @@ public class AssessmentsController {
         Assessment assessment = assessmentRepository.findById(assessmentId)
                 .orElseThrow(() -> new EntityNotFoundException("Assessment not found"));
 
-        // We only want students enrolled in the subject this assessment belongs to
-        List<SubjectGrades> enrollments = gradesRepository.findBySubject(assessment.getSubject());
+        // We only want students doing the assessment
+        List<SchoolClass> assignedClasses = assessment.getSchoolClasses();
+        List<Student> enrolledStudents = new ArrayList<>();
+        for(SchoolClass sClass: assignedClasses)
+            for(Student student: sClass.getStudents())
+                enrolledStudents.add(student);
 
         Result result = new Result();
         result.setAssessment(assessment); // Pre-link the assessment
 
         model.addAttribute("assessment", assessment);
-        model.addAttribute("enrollments", enrollments);
+        model.addAttribute("enrolledStudents", enrolledStudents);
         model.addAttribute("result", result);
 
         return "assessments/submission-form";

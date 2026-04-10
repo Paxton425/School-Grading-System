@@ -7,10 +7,7 @@ import com.example.springbootmvcdemo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -19,9 +16,7 @@ public class ReportService {
 
     public StudentReportDTO generateReport(Student student) {
         StudentReportDTO report = new StudentReportDTO();
-        report.setStudentId(student.getId());
-        report.setFirstName(student.getFirstName());
-        report.setLastName(student.getLastName());
+        report.setStudent(student);
         double highestMark = 0.0;
         double lowestMark = 100.0;
         double overallTotal = 0.0;
@@ -30,27 +25,32 @@ public class ReportService {
         TreeMap<String, TreeMap<Term, TermResult>> results = new TreeMap<>();
         HashMap<Term, Double> totalsPerTerm = new HashMap<>();
         HashMap<Term, Double> averagePerTerm = new HashMap<>();
-        int subjectCount = student.getSubjectGrades().size();
+        int subjectCount = student.getSchoolClass().getSubjects().size();
 
-        for (SubjectGrades grades : student.getSubjectGrades()) {
+        for (Subject subject : student.getSchoolClass().getSubjects()) {
             TreeMap<Term, TermResult> termResults = new TreeMap<>();
-            for (Term term : Term.values()) {
-                double finalMark = gradingService.calculateFinalMark(grades, term);
-                double averageMark = gradingService.calculateGradeAverage(grades, term);
-                Integer level = gradingService.calculateLevel(finalMark);
 
-                termResults.put(term, new TermResult(finalMark, averageMark, level));
+            for (Term term : Term.values()) {
+                Map<String, Number> termResult = gradingService.calculateTermResult(student.getResults(), subject, term);
+
+                termResults.put(
+                        term,
+                        new TermResult(
+                                termResult.get("results").doubleValue(),
+                                termResult.get("average").doubleValue(),
+                                termResult.get("level").intValue())
+                );
 
                 // Just do the running total here
-                totalsPerTerm.put(term, totalsPerTerm.getOrDefault(term, 0.0) + finalMark);
+                totalsPerTerm.put(term, totalsPerTerm.getOrDefault(term, 0.0) + termResult.get("results").doubleValue());
 
                 // Global stats
-                highestMark = Math.max(highestMark, finalMark);
-                lowestMark = Math.min(lowestMark, finalMark);
-                overallTotal += finalMark;
+                highestMark = Math.max(highestMark, termResult.get("results").doubleValue());
+                lowestMark = Math.min(lowestMark, termResult.get("results").doubleValue());
+                overallTotal += termResult.get("results").doubleValue();
                 marksCount++;
             }
-            results.put(grades.getSubject().getName(), termResults);
+            results.put(subject.getName(), termResults);
         }
 
         // NOW calculate averages after all totals are complete
@@ -71,5 +71,4 @@ public class ReportService {
 
           return report;
     }
-
 }

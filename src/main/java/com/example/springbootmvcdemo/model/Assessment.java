@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Assessment {
@@ -20,6 +21,13 @@ public class Assessment {
     @ManyToOne
     @JsonIgnoreProperties("assessments")
     private Subject subject;
+    @ManyToMany
+    @JoinTable(
+            name = "class_assessment",
+            joinColumns = @JoinColumn(name = "assessment_id"),
+            inverseJoinColumns = @JoinColumn(name = "class_id")
+    )
+    private List<SchoolClass> schoolClasses;
 
     public enum AssessmentType { SBA, PAT, EXAM }
 
@@ -85,5 +93,13 @@ public class Assessment {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public List<SchoolClass> getSchoolClasses() {
+        return schoolClasses;
+    }
+
+    public void setSchoolClasses(List<SchoolClass> schoolClasses) {
+        this.schoolClasses = schoolClasses;
     }
 }

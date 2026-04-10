@@ -9,9 +9,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 public class StudentReportDTO {
-    private UUID studentId;
-    private String firstName;
-    public String lastName;
+    private StudentDTO student;
     private double overallTotal;
     private double overallAverage;
     private double highestMark;
@@ -32,28 +30,12 @@ public class StudentReportDTO {
        }
    }
 
-    public UUID getStudentId() {
-        return studentId;
+    public StudentDTO getStudent() {
+        return student;
     }
 
-    public void setStudentId(UUID studentId) {
-        this.studentId = studentId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setStudent(Student student) {
+        this.student = new StudentDTO(student);
     }
 
     public double getOverallAverage() {

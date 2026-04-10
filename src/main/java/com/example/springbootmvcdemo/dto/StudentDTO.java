@@ -1,7 +1,8 @@
 package com.example.springbootmvcdemo.dto;
-import com.example.springbootmvcdemo.model.SchoolClass;
+import com.example.springbootmvcdemo.model.Result;
+import com.example.springbootmvcdemo.model.Student;
+import com.example.springbootmvcdemo.model.Student.Status;
 import com.example.springbootmvcdemo.model.Student.Gender;
-import com.example.springbootmvcdemo.model.SubjectGrades;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,18 +13,21 @@ public class StudentDTO {
     private String firstName;
     private String lastName;
     private Gender gender;
+    private Status status;
     private LocalDate birthDay;
     private List<SubjectDTO> subjects;
-    private List<SubjectGrades> subjectGrades;
+    private List<ResultDTO> results;
     private SchoolClassDTO schoolClassDTO;
 
-    public StudentDTO(UUID id, String firstName, String lastName, Gender gender, LocalDate birthDay, SchoolClass schoolClass) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.gender = gender;
-        this.birthDay = birthDay;
-        this.schoolClassDTO = new SchoolClassDTO(schoolClass);
+    public StudentDTO(Student student) {
+        this.id = student.getId();
+        this.firstName = student.getFirstName();
+        this.lastName = student.getLastName();
+        this.gender = student.getGender();
+        this.birthDay = student.getBirthDay();
+        this.status = student.getStatus();
+        this.results = ResultDTO.toDTOList(student.getResults());
+        this.schoolClassDTO = new SchoolClassDTO(student.getSchoolClass());
     }
 
     public UUID getId() {
@@ -48,6 +52,14 @@ public class StudentDTO {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public SchoolClassDTO getSchoolClassDTO() {
@@ -76,6 +88,14 @@ public class StudentDTO {
 
     public List<SubjectDTO> getSubjects() {
         return subjects;
+    }
+
+    public List<ResultDTO> getResults() {
+        return results;
+    }
+
+    public void setResults(List<Result> results) {
+        this.results = ResultDTO.toDTOList(results);
     }
 
     public void setSubjects(List<SubjectDTO> enrollmentSubjects) {

@@ -3,7 +3,6 @@ package com.example.springbootmvcdemo.dto;
 import com.example.springbootmvcdemo.model.Department;
 import com.example.springbootmvcdemo.model.Instructor;
 import com.example.springbootmvcdemo.model.SchoolClass;
-import com.example.springbootmvcdemo.model.SubjectGrades;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +18,6 @@ public class InstructorDTO {
     private String email;
     private String phone;
     List<SchoolClass> instructorSchoolClasses;
-    List<SubjectGrades> subjectGrades;
 
     public enum Role { TEACHER, HOD, ADMIN}
 
@@ -99,13 +97,5 @@ public class InstructorDTO {
 
     public void setInstructorSchoolClasses(List<SchoolClass> instructorSchoolClasses) {
         this.instructorSchoolClasses = instructorSchoolClasses;
-    }
-
-    public List<SubjectGrades> getSubjectGrades() {
-        return subjectGrades;
-    }
-
-    public void setSubjectGrades(List<SubjectGrades> subjectGrades) {
-        this.subjectGrades = subjectGrades;
     }
 }
