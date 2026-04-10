@@ -6,13 +6,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
-    <groupId>com.example</groupId>
-    <artifactId>SpringBootMVCDemo</artifactId>
+    <groupId>com.nexusgrade</groupId>
+    <artifactId>nexus-grade-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>SpringBootMVCDemo</name>
-    <description>SpringBootMVCDemo</description>
+    <name>NexusGrade</name>
+    <description>SpringBoot MVC Grades Tracking and manger</description>
     <url/>
     <licenses>
         <license/>

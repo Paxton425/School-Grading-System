@@ -17,6 +17,32 @@ $(document).ready(function() {
                 "data": "schoolClassDTO",
                 "render": (data) => `<span class="badge bg-primary-subtle text-primary rounded-pill px-3">Grade ${data.grade}</span>`
             },
+            {
+                "data": "status",
+                "render": (data) => {
+                    let status = 'Unknown';
+                    let badgeTheme;
+                    switch(data){
+                        case 'ACTIVE':
+                            status = 'Active';
+                            badgeTheme = 'bg-success-subtle text-success'
+                            break;
+                        case 'INACTIVE':
+                            status = 'Inactive';
+                            badgeTheme = 'bg-secondary-subtle text-secondary'
+                            break;
+                        case 'COMPLETED':
+                            status = 'Completed';
+                            badgeTheme = 'bg-primary-subtle text-primary'
+                            break;
+                        default:
+                            badgeTheme = 'bg-secondary-subtle text-secondary'
+                            break;
+                    }
+                    return `<span class="badge ${badgeTheme} rounded-pill px-3">${status}</span>`;
+                }
+
+            },
             { "data": "gender" },
             { "data": "birthDay" },
             {

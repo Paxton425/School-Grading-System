@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(~{::body}, ~{::link}, null)}">
+<head>
+  <title>Student Profile | Grading System</title>
+  <link rel="stylesheet" th:href="@{/css/students.css}" href="../../static/css/students.css">
+</head>
+<body>
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex align-items-center justify-content-between bg-white p-4 rounded shadow-sm">
+        <div>
+          <h2 class="fw-bold text-dark mb-1" th:text="${student.firstName + ' ' + student.lastName}">Sphelele Mthethwa</h2>
+          <span class="badge bg-primary-subtle text-primary">Active Student</span>
+          <span class="text-muted ms-3 small"><i class="bi bi-fingerprint"></i> <span th:text="${student.id}">UUID</span></span>
+        </div>
+        <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-light border">
+          <i class="bi bi-pencil"></i> Edit
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 pt-4">
+          <h5 class="fw-bold"><i class="bi bi-person-badge me-2"></i>Personal Details</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted">Gender</span>
+              <span class="fw-bold" th:text="${student.gender}">MALE</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted">Date of Birth</span>
+              <span class="fw-bold" th:text="${#temporals.format(student.birthDay, 'dd MMM yyyy')}">12 May 2005</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-4"><i class="bi bi-book me-2"></i>Class Information</h5>
+          <div th:if="${student.getSchoolClass() != null}" class="row text-center text-md-start">
+            <div class="col-md-4 mb-3">
+              <label class="d-block text-muted small">Class</label>
+              <span class="h4 fw-bold text-primary" th:text="${student.getSchoolClass().title}">10-C</span>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="d-block text-muted small">Grade</label>
+              <span class="h4 fw-bold" th:text="${'Grade ' + student.getSchoolClass().grade}">Grade 10</span>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="d-block text-muted small">Academic Year</label>
+              <span class="h4 fw-bold" th:text="${student.getSchoolClass().classYear}">2026</span>
+            </div>
+          </div>
+          <div th:unless="${student.getSchoolClass() != null}" class="alert alert-warning">
+            Student is not currently assigned to a class.
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm" th:if="${student.getSchoolClass()?.subjects != null}">
+        <div class="card-header bg-white border-0 pt-4">
+          <h5 class="fw-bold"><i class="bi bi-journal-text me-2"></i>Registered Subjects</h5>
+          <p class="text-muted small mb-0" th:text="${'Class: ' + student.getSchoolClass().getTitle()}">Class A</p>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div th:each="subject : ${student.getSchoolClass().getSubjects()}" class="col-md-6">
+              <div class="p-3 border rounded bg-light d-flex align-items-center">
+                <i class="bi bi-check-circle-fill text-success me-3"></i>
+                <span class="fw-semibold" th:text="${subject.getName()}">Mathematics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

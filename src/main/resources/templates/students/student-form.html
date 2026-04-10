@@ -3,12 +3,24 @@
       th:replace="~{common/layout :: layout(~{::body}, ~{::link}, ~{::script})}">
 <head>
     <meta charset="UTF-8" />
-    <title>Create Student Profile</title>
+    <title th:text="${student.id == null ? 'Enroll Student' : 'Edit Student Profile'}">Create Student Profile</title>
     <link rel="stylesheet" th:href="@{/css/students.css}" href="../../static/css/students.css">
 </head>
 <body class="bg-light">
+<div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamatation-triangle-fill me-2"></i>
+    <span th:text="${error}">Error message here</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
 <div class="main-content container mt-5">
+
+    <div class="d-flex align-items-center mb-4">
+        <a th:href="@{/students}" class="btn btn-link text-decoration-none p-0 me-3">
+            <i class="bi bi-arrow-left fs-4"></i>
+        </a>
+        <h2 class="fw-bold mb-0" th:text="${student.id == null ? 'Enroll Student' : 'Edit Student Profile'}">Enroll Student</h2>
+    </div>
     <div class="row">
         <form class="row" th:action="@{/students/save}" th:object="${student}" method="post">
             <div class="col-md-7">
@@ -20,6 +32,7 @@
                         <input type="hidden" th:field="*{id}" />
 
                         <div class="row mb-3">
+
                             <div class="col">
                                 <label class="form-label">First Name</label>
                                 <input
@@ -40,17 +53,6 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Grade</label>
-                            <select th:field="*{schoolClass}" class="form-select">
-                                <option value="" th:text="|Choose class|"></option>
-                                <option th:each="c : ${classes}"
-                                        th:value="${c}"
-                                        th:text="|Class ${c}|">
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
                             <label class="form-label">Gender</label>
                             <select th:field="*{gender}" class="form-select">
                                 <option
@@ -64,8 +66,9 @@
                         <div class="mb-4">
                             <label class="form-label">Date of Birth</label>
                             <input
-                                    type="date"
                                     th:field="*{birthDay}"
+                                    type="date"
+                                    th:value="${student.birthDay != null ? #temporals.format(student.birthDay, 'yyyy-MM-dd') : ''}"
                                     class="form-control"
                                     required/>
                             <small class="text-muted">
@@ -76,8 +79,7 @@
                         <div class="d-grid">
                             <button
                                     class="save-student-button btn btn-primary"
-                                    type="submit"
-                                    onclick="saveStudent(event)">
+                                    type="submit">
                                 Save Student Profile
                             </button>
                         </div>
@@ -105,125 +107,56 @@
             </div>
 
             <div class="col-md-5">
-                <div class="card shadow-sm border-primary">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Enrolled Subjects</h5>
+                <div class="card shadow-sm border-0 bg-white">
+                    <div class="card-header bg-white border-bottom-0 pt-4">
+                        <h5 class="fw-bold mb-0">Academic Placement</h5>
+                        <p class="text-muted small">Assign the student to a specific grade and status.</p>
                     </div>
-                    <div class="card-body" id="enrollmentSection">
-                        <div class="table-responsive">
-                            <table class="table table-sm table-hover align-middle"
-                                    id="draftSubjectTable">
-                                <thead class="table-light">
-                                <tr>
-                                    <th>Subject</th>
-                                    <th>Grade</th>
-                                    <th>Department</th>
-                                    <th class="text-end"></th>
-                                </tr>
-                                </thead>
-                                <tbody id="draftSubjectBody">
-                                <tr id="emptyRow"
-                                        th:if="${#lists.isEmpty(student.subjectGrades)}">
-                                    <td
-                                            colspan="4"
-                                            class="text-center py-3 text-muted">
-                                        No subjects added to draft.
-                                    </td>
-                                </tr>
+                    <div class="card-body">
 
-                                <tr th:each="grades : ${student.subjectGrades}">
-                                    <td style="display: none;" th:text="${grades.subject.getId()}"></td>
-                                    <td th:text="${grades.subject.name}">
-                                        Mathematics
-                                    </td>
-                                    <td th:text="${grades.subject.grade}">
-                                        FET
-                                    </td>
-                                    <td th:text="${grades.subject.department}">
-                                        MATHEMATICS
-                                    </td>
-                                    <td class="text-end">
-                                        <button
-                                                type="button"
-                                                class="btn btn-link text-danger p-0"
-                                                onclick="removeRow(this)">
-                                            <i class="bi bi-dash-circle-fill"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Class Group</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-mortarboard"></i></span>
+                                <select th:field="*{schoolClass}" class="form-select" id="classSelection" required>
+                                    <option value="" selected disabled>Select a class...</option>
+                                    <optgroup th:each="entry : ${classes}" th:label="|Grade ${entry.key}|">
+                                        <option th:each="sc : ${entry.value}"
+                                                th:value="${sc.id}"
+                                                th:text="|Class ${sc.title}|">
+                                            Class Title
+                                        </option>
+                                    </optgroup>
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="d-grid mt-3">
-                            <button type="button"
-                                    class="btn btn-outline-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#addSubjectModal">
-                                + Add Subject to Draft
-                            </button>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Enrollment Status</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-shield-check"></i></span>
+                                <select th:field="*{status}" class="form-select" id="statusSelection" required>
+                                    <option value="Set status..." selected disabled>Set status...</option>
+                                    <option th:each="status : ${statuses}"
+                                            th:value="${status}"
+                                            th:text="${#strings.capitalize(#strings.toLowerCase(status))}">
+                                    </option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="modal fade"
-                                id="addSubjectModal"
-                                tabindex="-1"
-                                aria-labelledby="addSubjectModalLabel"
-                                aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="addSubjectModalLabel">
-                                            Enroll in Subject
-                                        </h5>
-                                        <button
-                                                type="button"
-                                                class="btn-close"
-                                                data-bs-dismiss="modal"
-                                                aria-label="Close">
 
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label class="form-label">Select Subject </label>
-                                            <select
-                                                    class="form-select"
-                                                    id="subjectSelection">
-                                                <option value="" selected disabled>
-                                                    Choose a subject...
-                                                </option>
-                                                <option
-                                                        th:each="subject : ${allSubjects}"
-                                                        th:value="${subject.getName()}"
-                                                        th:data-id="${subject.getId()}"
-                                                        th:data-name="${subject.getName()}"
-                                                        th:data-grade="${subject.getGrade()}"
-                                                        th:data-dept="${subject.department}"
-                                                        th:text="|${subject.getName()}|">
-                                                    Subject Name
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="form-text">
-                                            Note: This adds the subject to your
-                                            <strong>unsubmitted draft</strong>
-                                            list on the right.
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button
-                                                type="button"
-                                                class="btn btn-secondary"
-                                                data-bs-dismiss="modal">
-                                            Cancel
-                                        </button>
-                                        <button
-                                                type="button"
-                                                class="btn btn-success"
-                                                onclick="addSubjectToTable(event)">
-                                            Add to Draft
-                                        </button>
-                                    </div>
+                        <div id="enrollmentSummary" class="p-4 rounded-3 border border-dashed bg-light text-center">
+                            <div id="classPlaceholder">
+                                <i class="bi bi-info-circle text-primary fs-4"></i>
+                                <p class="mb-0 text-muted small mt-2">Complete placement to verify enrollment</p>
+                            </div>
+
+                            <div id="summaryInfo" class="d-none">
+                                <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+                                    <span class="badge rounded-pill bg-primary" id="detailGrade">Grade</span>
+                                    <span class="badge rounded-pill bg-secondary" id="detailStatus">Status</span>
                                 </div>
+                                <h5 class="fw-bold text-dark mb-0" id="detailTitle">Class Name</h5>
                             </div>
                         </div>
                     </div>
@@ -233,172 +166,38 @@
     </div>
 </div>
 </body>
-<script th:inline="javascript">
-    const popupBackdrop = document.getElementById('popupBackdrop');
-    const popup = document.getElementById('popup');
-    const popupMessage = document.getElementById('popupMessage');
-    const saveStudentButton = document.querySelector('.save-student-button');
+<script>
+    $(document).ready(function() {
+        function updateSummary() {
+            const classOpt = $('#classSelection').find('option:selected');
+            const statusVal = $('#statusSelection').val();
 
-    const enrollmentRows = document.getElementById('draftSubjectBody').querySelectorAll('tr');
-    let enrollmentIndex = Array.isArray(enrollmentRows)? enrollmentRows.length : 0;
-    // 2. IMPORTANT: Pre-fill the array with existing enrollments so the POST payload is complete
-    let enrolledSubjects = Array.isArray(enrollmentRows)?
-        enrollmentRows.map((element) => (
-            {
-                Id :  element.querySelectorAll('td')[0].textContent,
-                name: element.querySelectorAll('td')[1].textContent,
-                grade: element.querySelectorAll('td')[2].textContent,
-                department: element.querySelectorAll('td')[3].textContent,
-            }
-        )) : [];
+            const classTitle = classOpt.val() ? classOpt.text() : null;
+            const gradeLabel = classOpt.closest('optgroup').attr('label');
 
-    const loadingSpinner = (`
-        <div class="spinner-border spinner-border-sm text-light" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    `);
+            if (classTitle || statusVal) {
+                $('#classPlaceholder').addClass('d-none');
+                $('#summaryInfo').removeClass('d-none');
 
-    function openPopup(status, message) {
-        const $popupStatus = status.charAt(0).toUpperCase() + status.slice(1);
-        const $closeBtn = $('.popup-close-button');
-        const $popupImg = $('.popup-image');
+                if (classTitle) {
+                    $('#detailGrade').text(gradeLabel).removeClass('d-none');
+                    $('#detailTitle').text(classTitle);
+                }
 
-        if (status === 'success') {
-            $closeBtn.removeClass('error-button').addClass('success-button');
-            $popupImg.attr('src', '/images/check-mark-filled.png');
-        } else {
-            $closeBtn.removeClass('success-button').addClass('error-button');
-            $popupImg.attr('src', '/images/red-error-icon.png');
-        }
+                if (statusVal) {
+                    const statusBadge = $('#detailStatus');
+                    statusBadge.text(statusVal).removeClass('d-none');
 
-        $('.popup-status').text($popupStatus);
-        $('#popupBackdrop').css('display', 'flex');
-        $('#popupMessage').text(message);
-    }
-
-    function  closePopup(){
-        popupBackdrop.style.display = "none";
-    }
-
-    function addSubjectToTable(e) {
-        e.preventDefault()
-        const select = document.querySelector('#subjectSelection');
-        const subjectId = select.value;
-
-        // Get data attributes from the selected option (you'll need to add these to your th:each)
-        const subject = {
-            Id :  select.options[select.selectedIndex].getAttribute('data-id'),
-            name: select.options[select.selectedIndex].getAttribute('data-name'),
-            department: select.options[select.selectedIndex].getAttribute('data-dept'),
-            grade: select.options[select.selectedIndex].getAttribute('data-grade')
-        }
-
-        if(!subjectId) return;
-
-        // Remove "Empty" row if it exists
-        const emptyRow = document.getElementById('emptyRow');
-        if(emptyRow) emptyRow.remove();
-
-        const tbody = document.getElementById('draftSubjectBody');
-        const row = `
-          <tr>
-              <td style="display: none;">${subject.Id}</td>
-              <td>
-                  ${subject.name}
-                  <input type="hidden" th:field="*{enrollments}" name="${subject.id}" value="${subjectId.id}">
-              </td>
-              <td>${subject.grade}</td>
-              <td>${subject.department}</td>
-              <td class="text-end">
-                  <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()">Remove</button>
-              </td>
-          </tr>
-      `;
-
-        tbody.insertAdjacentHTML('beforeend', row);
-        enrolledSubjects.push(subject);
-        enrollmentIndex++;
-
-        // Close Modal
-        bootstrap.Modal.getInstance(document.getElementById('addSubjectModal')).hide();
-    }
-
-    async function saveStudent(e){
-        e.preventDefault();
-        e.target.disabled = true;
-        e.target.innerHTML = loadingSpinner;
-
-        try{
-            const studentId = $('#id').value;
-            const studentData = {
-                id: studentId ? studentId : null, // Include the ID for updates!
-                firstName: $('#firstName').val().trim(),
-                lastName: $('#lastName').val().trim(),
-                class: $('#class').val().trim(),
-                gender: $('#gender').val().trim(),
-                birthDay: $('#birthDay').val().trim(),
-                enrollmentSubjects: Array.isArray(enrolledSubjects) ? enrolledSubjects : []
-            };
-
-            if(isDataValid(studentData)){
-                const dynamicOptions = studentData.id?
-                    {
-                        method: 'PUT',
-                        url: `/students/edit/save/${studentData.id}`,
-                    }: {
-                        method: 'POST',
-                        url: `/students/create/save`,
-                    }
-
-                console.log('options', dynamicOptions);
-
-                console.log('body: ', studentData)
-
-                const response = await fetch(dynamicOptions.url, {
-                    method: dynamicOptions.method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(studentData)
-                });
-
-                const message = await response.text();
-
-                console.log('response code', response.status, 'message', message);
-
-                if (response.ok) {
-                    openPopup('success', message);
-                    $('.popup-close-button').on('click', ()=>{
-                        closePopup();
-                        window.location.href = "/students";
-                    })
-                } else {
-                    e.target.innerHTML = 'Save Student Profile';
-                    alert("Something went wrong.");
-                    console.log('sent object', studentData)
+                    // Professional color coding
+                    statusBadge.removeClass('bg-success bg-warning bg-danger bg-secondary');
+                    if (statusVal === 'ACTIVE') statusBadge.addClass('bg-success');
+                    else if (statusVal === 'PENDING') statusBadge.addClass('bg-warning text-dark');
+                    else statusBadge.addClass('bg-secondary');
                 }
             }
         }
-        catch(error){
-            openPopup('error', error.message);
-            e.target.innerHTML = 'Save Student Profile';
-            e.target.disabled = false;
-        }
-    }
 
-    function isDataValid(studentData) {
-        for (let key in studentData) {
-            let value = studentData[key];
-
-            if(key === 'id') continue; //Ignore Id
-            if (key === 'enrollmentSubjects') { // 1. Specific check for the enrollments array
-                if(value.length === 0) throw new Error("Please select at least one subject.");
-            }
-            else if (!value) {
-                throw new Error(`The field ${key} cannot be empty.`);
-            }
-        }
-        return true;
-    }
+        $('#classSelection, #statusSelection').on('change', updateSummary);
+    });
 </script>
 </html>

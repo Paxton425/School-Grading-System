@@ -47,11 +47,11 @@
 
                     <div class="mb-4">
                         <label class="form-label fw-bold">1. Select Student</label>
-                        <select th:field="*{enrollment}" class="form-select form-select-lg" required>
+                        <select th:field="*{student}" class="form-select form-select-lg" required>
                             <option value="" disabled selected>-- Choose a student enrolled in this subject --</option>
-                            <option th:each="en : ${enrollments}"
-                                    th:value="${en.id}"
-                                    th:text="${en.student.firstName + ' ' + en.student.lastName + ' (Grade ' + en.student.grade + ')'}">
+                            <option th:each="st : ${enrolledStudents}"
+                                    th:value="${st.id}"
+                                    th:text="${st.firstName + ' ' + st.lastName + ' (Grade ' + st.getSchoolClass().grade +') (Class '+ st.getSchoolClass().getTitle()+ ')'}">
                                 Student Name
                             </option>
                         </select>

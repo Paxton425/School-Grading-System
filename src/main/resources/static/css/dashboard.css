@@ -117,7 +117,7 @@
 .card canvas {
     display: block;
     width: 100% !important;
-    height: 100% !important;
+    height: 100%;
 }
 
 .card h3 {
@@ -125,6 +125,12 @@
     font-weight: 700;
     margin-bottom: 20px;
     color: #334155;
+}
+
+.chart-container {
+    position: relative;
+    flex: 1;
+    min-height: 250px;
 }
 
 /* Table Design */

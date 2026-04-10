@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::main}, ~{::link}, ~{::scripts})}">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:fragment="link">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </th:block>
+</head>
+<body>
+
+<main class="container mx-auto my-10 p-5 text-gray-800">
+
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            Instructor Profile
+        </h1>
+        <div class="space-x-2">
+            <a th:href="@{/instructors/edit/{id}(id=${instructor.id})}"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 shadow-sm">
+                <i class="fas fa-edit mr-2"></i>Edit Profile
+            </a>
+            <a th:href="@{/instructors}"
+               class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg transition duration-300 shadow-sm">
+                <i class="fas fa-arrow-left mr-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <div class="flex flex-col items-center text-center pb-6 border-b border-gray-100">
+                    <div class="w-24 h-24 rounded-full bg-blue-50 flex items-center justify-center text-4xl mb-4 border border-blue-100">
+                        <i th:class="${instructor.gender.name() == 'MALE' ? 'fas fa-user-tie text-blue-600' : 'fas fa-user-graduate text-blue-600'}"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900" th:text="${instructor.firstName + ' ' + instructor.lastName}">John Doe</h2>
+                    <p class="text-blue-600 font-semibold uppercase text-xs tracking-wider mt-1" th:text="${instructor.role}">TEACHER</p>
+                    <span class="mt-3 px-3 py-1 bg-gray-100 text-gray-600 text-xs font-mono rounded-md" th:text="${instructor.employeeId}">EMP-12345</span>
+                </div>
+
+                <div class="mt-6 space-y-4">
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-building w-8 text-center text-blue-600"></i>
+                        <span class="text-sm font-bold mr-2">Department:</span>
+                        <span class="text-sm" th:text="${instructor.department != null ? instructor.department.name : 'N/A'}">ICT</span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-envelope w-8 text-center text-blue-600"></i>
+                        <span class="text-sm" th:text="${instructor.email}">instructor@futuretech.com</span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-phone w-8 text-center text-blue-600"></i>
+                        <span class="text-sm" th:text="${instructor.phone}">+27 12 345 6789</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 h-full">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-chalkboard-teacher mr-3 text-blue-600"></i>
+                    Assigned School Classes
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                        <tr class="text-left text-gray-500 uppercase text-xs font-bold tracking-wider">
+                            <th class="px-6 py-4">Grade</th>
+                            <th class="px-6 py-4">Class Title</th>
+                            <th class="px-6 py-4">Year</th>
+                            <th class="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                        <tr th:if="${#lists.isEmpty(instructor.schoolClasses)}">
+                            <td colspan="4" class="px-6 py-10 text-center text-gray-400 italic">
+                                No classes currently assigned.
+                            </td>
+                        </tr>
+
+                        <tr th:each="schoolClass : ${instructor.schoolClasses}" class="hover:bg-blue-50/50 transition duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold"
+                                      th:text="${'Grade ' + schoolClass.grade}">Grade 10</span>
+                            </td>
+                            <td class="px-6 py-4 font-semibold text-gray-800" th:text="${schoolClass.title}">10-A Computer Science</td>
+                            <td class="px-6 py-4 text-gray-500" th:text="${schoolClass.classYear}">2026</td>
+                            <td class="px-6 py-4 text-right">
+                                <a th:href="@{/classes/view/{id}(id=${schoolClass.id})}"
+                                   class="text-blue-600 hover:text-blue-800 text-sm font-bold transition">
+                                    View Class
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<th:block th:fragment="scripts">
+</th:block>
+
+</body>
+</html>
